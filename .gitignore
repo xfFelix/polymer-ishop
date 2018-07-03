@@ -1,0 +1,11 @@
+*.mdb
+*.ldb
+*.sln
+*.config
+
+#过滤文件夹Debug,Release,obj  
+Debug/
+node_modules/
+.svn/
+Release/
+obj/
