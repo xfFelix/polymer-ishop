@@ -1,0 +1,84 @@
+@function px2rem($px) {
+	$rem:16px;
+	@return ($px / $rem) + rem;
+}
+		html,body{
+    		margin: 0;
+    		padding: 0;
+    	}
+    	.refund_container{
+            width: 100%;
+            height: 100%;
+    		display: flex;
+    		flex-flow: column;
+    	}
+        .refund_title {
+            margin: auto;
+            height: px2rem(86px);
+            width: 100%;
+            
+        }
+        .refund_title .title_text{
+            font-family: PingFangTC-Medium;
+            font-size: px2rem(20px);
+            color: #4A4A4A;
+            letter-spacing: 0;
+            text-align: center;
+        }
+        .refund_reason{
+            width: 100%;
+            height: px2rem(296px);
+        }
+        .refund_reason .reason_item{
+            margin: auto;
+            border-bottom: px2rem(1px) solid #DDDDDD;
+            width: px2rem(320px);
+            font-family: PingFangTC-Light;
+            font-size: 15px;
+            color: #474747;
+            letter-spacing: 0;
+            line-height: px2rem(40px);
+        }
+        .refund_reason .reason_text {
+            border: px2rem(1px) solid #DDDDDD;
+            margin: auto;
+            width: px2rem(320px);
+            height: px2rem(96px);
+        }
+        .refund_reason .reason_text textarea{
+            outline: none;
+            border: 0px;
+            width: 100%;
+            height: 100%;
+        }
+        .refund_button{
+            width: 100%;
+            height: px2rem(86px);
+            display: flex;
+            flex-direction: row;
+        }
+        .refund_button .button_ok{
+            margin: auto;
+            width: px2rem(145px);
+            height: px2rem(40px);
+            text-align: center;
+            line-height: px2rem(40px);
+            font-family: PingFangTC-Medium;
+            font-size: px2rem(16px);
+            color: #FFFFFF;
+            letter-spacing: 0;
+            background-color: #EC3437;
+        }
+        .refund_button .button_calcel{
+            margin: auto;
+            width: px2rem(145px);
+            height: px2rem(40px);
+            text-align: center;
+            line-height: px2rem(40px);
+            font-family: PingFangTC-Medium;
+            font-size: px2rem(16px);
+            color: #9B9B9B;
+            letter-spacing: 0;
+            background-color: #F5F5F5;
+        }
+    	

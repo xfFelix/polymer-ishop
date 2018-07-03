@@ -1,0 +1,317 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html" />
+<link rel="import" href="../../bower_components/app-route/app-location.html" />
+<link rel="import" href="../../bower_components/app-route/app-route.html" />
+<link rel="import" href="../../bower_components/iron-selector/iron-selector.html" >
+<!-- <link rel="import" href="../../bower_components/paper-slider/paper-slider.html" > -->
+<link rel="import" href="../../bower_components/l2t-paper-slider/l2t-paper-slider.html" >
+<link rel="import" href="../../bower_components/vaadin-valo-theme/vaadin-combo-box.html">
+<link rel="import" href="../../bower_components/vaadin-combo-box/vaadin-combo-box.html">
+<script src="../../bower_components/animejs/anime.js"></script>
+<script src="./data/lang.js"></script>
+<link rel="import" href="./elements/lt-header.html" />
+<link rel="import" href="./elements/lt-footer.html" />
+<link rel="import" href="lt-style.html" />
+<link rel="import" href="./lt-mixin.html" />
+<link rel="import" href="./elements/lt-pop.html" />
+<link rel="import" href="./elements/lt-input.html" />
+<link rel="import" href="./elements/lt-button.html" />
+<dom-module id="lt-app">
+  <template>
+    <style inclube="lt-style">
+      :host {
+        --app-header-size:50px;
+        --app-header-color:#bb210b;
+        --app-radius:4px;
+        --app-title-color:#525252;
+        --app-grey-color:#9a9a9a;
+        --app-bg-grey:#525252;
+        --app-light-grey-color:#cccccc;
+        --app-price-color:rgb(189, 36, 22);
+        --app-button-bg:#b0b8ba;
+        --app-button-text:#fff;
+        --app-ui-focus:#97a2a4;
+        --app-ui-disabled:rgba(48,64,84,.11);
+        --app-button-shadow:rgba(0,0,0,.3);
+        --app-success-color:rgb(241, 136, 13);
+        --app-fail-color:rgb(144, 24, 8);
+        --app-margin:10px;
+        --app-card-width:100%;
+        --app-card-content-padding:12px;
+        --app-shadow: 0 10px 10px -5px rgba(51, 55, 59, 0.17);
+        --app-primary-red:#bb210b;
+        --app-primary-orange:#f9a61a;
+        --app-primary-blue:#4A90E2;
+      }
+      #appContainer{
+        width: 100%;
+        height: 100%;
+        /*top: 0;*/
+        /*left: 0;*/
+        /*position: absolute;*/
+        /*display: flex;*/
+        /*flex-direction: column;*/
+      }
+      #header{
+        flex-grow: 0;
+        display: none;
+      }
+      #allPageContainer{
+        display: block;
+        width: 100%;
+        min-height: calc(100% - 196px);
+        overflow: scroll;
+        flex-grow: 1;
+        margin-top: 0px;
+      }
+      #footer{
+        display: none;
+        flex-grow: 0;
+        height: 196px;
+      }
+      .confirmBox{
+        min-height: 100px;
+        font-size: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    </style>
+
+    <app-location route="{{route}}" query-params="{{query}}" use-hash-as-path></app-location>
+    <app-route
+        route="{{route}}"
+        pattern="/:page"
+        data="{{routePage}}"
+        tail="{{tail}}">
+    </app-route>
+    <app-route
+        route="{{tail}}"
+        pattern="/:id"
+        data="{{subPage}}">
+    </app-route>
+
+    <div id="appContainer" on-click="_handleAppClick" on-login-fail="_checkLogin">
+      <lt-header id="header" language="{{language}}" mobile="{{mobile}}">
+      </lt-header>
+      <div id="allPageContainer" on-confirm="_confirmPop">
+        <lt-home-page id="home" language="{{language}}" page="[[page]]" on-hide="turnPage" state="{{state}}"></lt-home-page>
+        <lt-series-page id="series" page="[[page]]" language="{{language}}" on-hide="turnPage" state="{{state}}"></lt-series-page>
+        <lt-model-page id="model" page="[[page]]" language="{{language}}" on-hide="turnPage" state="{{state}}"></lt-model-page>
+        <lt-popular-page id="popular" page="[[page]]" language="{{language}}" on-hide="turnPage" state="{{state}}"></lt-popular-page>
+        <lt-car-page id="car" language="{{language}}" on-hide="turnPage" state="{{state}}" class$="{{state}}"></lt-car-page>
+        <lt-cart-page id="cart" language="{{language}}" on-hide="turnPage" state="{{state}}" class$="{{state}}"></lt-cart-page>
+        <lt-car-detail-page id="car-detail" language="{{language}}" page="[[page]]" vehicle-id="{{subPage.id}}" flag="{{flag}}" on-hide="turnPage" state="{{state}}"></lt-car-detail-page>
+        <lt-new-car-detail-page on-header-close="closeHeader" id="new-car-detail" language="{{language}}" page="[[page]]" vehicle-id="{{subPage.id}}" flag="{{flag}}" on-hide="turnPage" state="{{state}}"></lt-new-car-detail-page>
+        <lt-product-detail-page id="product-detail" language="{{language}}" page="[[page]]" product-id="{{subPage.id}}" on-hide="turnPage" state="{{state}}"></lt-product-detail-page>
+        <lt-product-page id="product" language="{{language}}" on-hide="turnPage" state="{{state}}"></lt-product-page>
+        <lt-purchase-page id="purchase" language="{{language}}" page="[[page]]" on-hide="turnPage" state="{{state}}" vehicle-id="{{subPage.id}}"></lt-purchase-page>
+        <lt-profile-page id="profile" language="{{language}}" page="[[page]]" on-hide="turnPage" state="{{state}}"></lt-profile-page>
+        <lt-compare-page id="compare" language="{{language}}" page="[[page]]" on-hide="turnPage" state="{{state}}"></lt-compare-page>
+        <lt-search-page id="search" language="{{language}}" page="[[page]]" on-hide="turnPage" state="{{state}}" search-str = "{{subPage.id}}"></lt-search-page>
+        <lt-order-page id="order" language="{{language}}" page="[[page]]" on-hide="turnPage" state="{{state}}"></lt-order-page>
+        <lt-order-detail-page id="order-detail" language="{{language}}" page="[[page]]" on-hide="turnPage" state="{{state}}"></lt-order-detail-page>
+        <lt-choose-shop-page id="choose-shop" language="{{language}}" page="[[page]]" on-hide="turnPage" state="{{state}}"></lt-choose-shop-page>
+        <lt-download-page id="download" language="{{language}}" page="[[page]]" on-hide="turnPage" state="{{state}}"></lt-download-page>
+      </div>
+      <lt-footer id="footer"></lt-footer>
+      <lt-pop id="confirmPop">
+          <div class="confirmBox">
+              {{confimMsg}}
+          </div>
+      </lt-pop>
+    </div>
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class LtApp extends ltMixin(Polymer.Element) {
+      static get is() { return 'lt-app'; }
+      static get properties() {
+        return {
+          isLogin: {
+            type: Boolean,
+            value: false
+          },
+          page:{
+            type:String,
+            observer:'pageChange'
+          },
+          query:{
+            type:Object,
+          },
+          language:{
+            type:String
+          },
+          mobile:{type:Boolean,value:false},
+          state:{type:String}
+        };
+      }
+      static get observers(){
+        return [
+          'checkFlag(route.path)',
+          'routePageObserver(routePage.page)',
+          'langChange(query.lang)'
+        ]
+      }
+      // 检查是否有flag，用于查找车详情
+      checkFlag(path){
+        if(path){
+          var arr = path.split('/');
+          if(arr.length > 3){
+              this.flag = arr[3];
+          }else{
+            this.flag = 0;
+          }
+        }
+      }
+      // 登陆失效
+      _checkLogin(e){
+        // 定时器，不让代码继续执行，防止pop被关闭;
+        setTimeout(()=>{
+          localStorage.removeItem('xHeader');
+          location.reload();
+        },2000)
+        this.confimMsg = "登陆失效，请重新登录！";
+        this.$.confirmPop.introAnimation();
+      }
+      // 确认弹出框
+      _confirmPop(e){
+        this.confimMsg = e.detail.msg;
+        this.$.confirmPop.opened = true;
+        this.$.confirmPop.introAnimation();
+
+      }
+      constructor(){
+        super();
+
+      }
+      closeHeader (e) {
+        if (e.detail.result) {
+          this.headerClose(true)
+        } else {
+          this.headerClose(false)
+        }
+      }
+      headerClose (e) {
+        if (e) {
+          this.$.header.style.display = 'none'
+          this.$.allPageContainer.style.marginTop = '0'
+          // 尾部footer
+          this.$.footer.style.display = 'none'
+        } else {
+          this.$.header.style.display = 'inline'
+          this.$.allPageContainer.style.marginTop = '50px'
+          // 尾部footer
+          this.$.footer.style.display = 'inline'
+        }
+      }
+      // app 最外层click事件
+      _handleAppClick(){
+        // 关闭menu
+        this.$.header.closeMenu();
+      }
+      ready(){
+        super.ready();
+        if (this.checkApp() == 'android') {
+          window.app.onPageLoadFinish();
+        } else if (this.checkApp() == 'ios'){
+          window.webkit.messageHandlers.iShopOrder.postMessage('iShopOrder');
+        }else{
+          this.headerClose(false);
+        }
+        window.addEventListener('resize', this.responsiveHandler.bind(this));
+        window._updateHeader = (token, username)=> {
+            this._updateHeader(token,username);
+            this.$.order.$.getOrderList.body = {
+                userName : this.header["X-USERNAME"]
+            }
+            this.$.order.$.getOrderList.generateRequest();
+        };
+        this.responsiveHandler();
+      }
+      responsiveHandler(e){
+        let ww = window.innerWidth;
+        if( ww > 1280){
+          this.state = 'desktop';
+          this.mobile = false;
+          return
+        }
+        if( ww < 1279 && ww > 1080){
+          this.state = 'tablet';
+          this.mobile = false;
+          return
+        }
+        if( ww < 1080 && ww > 660  ){
+          this.state = 'mobile';
+          this.mobile = true;
+          return
+        }
+        if( ww < 660){
+          this.state = 'mobile'
+          this.mobile = true;
+          return
+        }
+      }
+      turnPage(e){
+        // 置顶
+        if(navigator.userAgent.indexOf('Chrome') != -1){
+            document.documentElement.scrollTop = 0;
+        }else{ //safari brower
+            document.body.scrollTop = 0;
+        }
+        // this.$[this.page].show();
+      }
+      routePageObserver(page){
+        if(!page){
+          window.location.hash = '#/home';
+          return
+        }
+        var path = this.resolveUrl('/src/lt-auto/pages/lt-'+ page +'-page.html');
+        Polymer.importHref(path,
+          () =>{
+            this.page = page
+          },
+          err =>{
+            window.location.hash = '#/home';
+          },true);
+        if (!this.checkApp()) {
+          if (this.getHash() == 'new-car-detail') {
+            // 头部header
+            this.$.header.style.display = 'none'
+            this.$.allPageContainer.style.marginTop = '0'
+            // 尾部footer
+            this.$.footer.style.display = 'none'
+          } else {
+            document.title = '领骏达'
+          }
+        }
+      }
+      pageChange(_newPage,_oldPage){
+        if(!_newPage)return
+        // if no old value, show new page
+        if(_oldPage){
+          this.$[_oldPage].hide();
+        }
+        this.$[_newPage].show();
+        // 绑定登陆事件
+        this.$[_newPage].addEventListener('login',this.openlogin.bind(this))
+      }
+      openlogin(e){
+        this.$.header.openlogin();
+      }
+      langChange(lang){
+        if(!lang){
+          // set deafult language
+          this.language = 'zh-HK'
+          return
+        }
+        this.language = lang
+      }
+    }
+
+    window.customElements.define(LtApp.is, LtApp);
+  </script>
+</dom-module>

@@ -1,0 +1,647 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html" />
+<link rel="import" href="../../../bower_components/polymer/lib/elements/dom-if.html">
+<link rel="import" href="../../../bower_components/paper-spinner/paper-spinner.html" />
+<link rel="import" href="../elements/lt-refund-apply.html" />
+<link rel="import" href="../elements/lt-refund-success.html" />
+<link rel="import" href="../elements/lt-refund-wait.html" />
+<link rel="import" href="../elements/lt-refund-new-success.html" />
+<link rel="import" href="../elements/lt-refund-fail.html" />
+<link rel="import" href="../elements/lt-refund-schedule.html" />
+<link rel="import" href="../elements/lt-refund-reason.html" />
+
+<dom-module id="lt-order-page">
+	<template>
+		<style include="lt-style">
+			:host {
+				width: 100%;
+				min-height: 500px;
+				display: block;
+				padding: 15px 25px;
+				box-sizing: border-box;
+				background: #fff;
+				--border-style:1px solid #ddd;
+			}
+			.pageContainer{
+				min-height: 500px;
+			}
+			.header{
+				display: none;
+				color: rgba(0,0,0,0.6);
+				width: 100%;
+			}
+			.header span:last-child{
+				color :  var(--app-primary-blue);
+			}
+			.order_box{
+				margin-top: 20px;
+			}
+			.num{
+				color:#4e7cff;
+				padding: 0;
+			}
+			.selector{
+				display: block;
+				width: 100%;
+				padding-bottom: 10px;
+				border-bottom: var(--border-style);
+			}
+			.selector .item_type{
+				padding: 10px 30px;
+				border-radius: 2px;
+				color: #ddd;
+			}
+			.item_type.iron-selected:first-child{
+				border-top : var(--border-style);
+				border-right: var(--border-style);
+				border-bottom: 1px solid #fff;
+				font-weight: 800;
+				color: #4a4a4a;
+			}
+			.item_type.iron-selected:last-child{
+				border-top : var(--border-style);
+				border-left: var(--border-style);
+				border-bottom: 1px solid #fff;
+				border-right: var(--border-style);
+				font-weight: 800;
+				color: #4a4a4a;
+			}
+			.car_table table , .product_table table{
+				width: 100%;
+				border-collapse:collapse;
+				margin: 0 auto;
+				margin-top: 20px;
+			}
+			td .imgBox {
+				width: 25%;
+			}
+			table tr td{
+				border : 1px solid #ddd;
+				padding: 10px;
+				min-width: 120px;
+    			text-align: center;
+    			box-sizing: border-box;
+    			min-height: 110px;
+			}
+			table thead{
+				background: #F5F5F5;
+			}
+			table tbody{
+				background: #fff;
+			}
+			table tr td.detail_td{
+				border-top: none;
+				border-right: none;
+				display: flex;
+			}
+			table tr td.detail_td.product{
+				flex-direction: row;
+
+			}
+			.product_list{
+				width: 50%;
+			}
+			.dec {
+				margin-left: 10px;
+				margin-top: 5px;
+				width: 75%;
+				position: relative;
+			}
+			.brand {
+			    display: inline-block;
+					font-weight:bold;
+			}
+			.brand::after {
+			    content: " | ";
+			}
+			.series {
+			    display: inline-block;
+					font-weight:bold;
+			}
+			.model {
+				height: 33%;
+			    display: block;
+			    color: #999999;
+			    font-weight: 300;
+			    white-space: nowrap;
+			}
+			.orderId {
+				color: #999999;
+				height: 33%;
+				width: 100%;
+				display: flex;
+				flex-direction: row;
+				word-break: keep-all;
+				position: absolute;
+				bottom: 0px;
+				justify-content: space-around;
+				align-items: center;
+			}
+			.action{
+				color: #4e7cff;
+				cursor: pointer;
+			}
+			.cancel{
+				color:#ddd;
+				cursor: pointer;
+			}
+			.cancel:hover{
+				color: #f00;
+			}
+			.loading{
+				text-align: center;
+			}
+			.detail_td.product .imgBox{
+				margin: auto;
+			}
+			.detail_td.product .dec{
+				margin: auto;
+			}
+			/**
+			 * 弹出框最外层
+			 */
+			.refund{
+				display: none;
+    			width: 100%;
+    			height: 100%;
+    			left: 0;
+    			top: 0;
+    			position: fixed;
+    		}
+    		/**
+    		 * 遮罩层
+    		 */
+    		.refund .poplayer{
+    			width: 100%;
+    			height: 100%;
+    			position: absolute;
+    			left:0;
+    			top:0;
+    			z-index:10;
+    			background:#f5f5f5;
+    			-moz-opacity: 0.8;
+    			opacity:.90;
+    			filter: alpha(opacity=80);
+    		}
+    		/**
+    		 * 弹出框内容
+    		 */
+    		.refund_container{
+    			display: none;
+    			position: absolute;
+    			z-index: 11;
+    			left: 50%;
+    			top: 50%;
+    			transform: translate(-50%,-50%);
+    			width: 600px;
+    			min-height: 239px;
+    			height: auto;
+    			border: 1px solid #DDDDDD;
+    		}
+    		/**
+    		 * 弹出框(原因)
+    		 */
+    		.refund_reason {
+    			display: none;
+    			z-index: 11;
+    			position: absolute;
+    			left: 50%;
+    			top: 50%;
+    			transform: translate(-50%,-50%);
+    			width: 381px;
+    			height: 468px;
+    			border: 1px solid #DDDDDD;
+            	border-top: 2px solid #F9A41A;
+            	background: #FFFFFF;
+    		}
+            @media screen and (max-width:620px){
+            	:host{
+            		padding: 10px;
+            	}
+            	.name{
+            		font-size: 14px;
+            		margin: 0;
+            	}
+            	table {
+            		font-size: 12px;
+            		table-layout: fixed;
+            	}
+            	table tr td.detail_td{
+            		flex-direction: column;
+            	}
+            	td .imgBox ,td .dec{
+            		width: 100%;
+            		margin: 0;
+            	}
+            	.orderId{
+            		display: none;
+            	}
+            	.model {
+            		white-space: normal;
+            	}
+            	table tr td.detail_td.product{
+            		flex-direction: column;
+            	}
+            	.refund_container{
+            		width: 100%;
+            		background-color: #FFFFFF;
+            	}
+            }
+		</style>
+		<div class="pageContainer">
+			<div class="header">
+				当前位置：<span>首页</span> > <span>我的订单</span>
+			</div>
+			<div class="order_box">
+				<iron-selector selected="{{selectType}}" class="selector" attr-for-selected="id" fallback-selection="car">
+					<span class="item_type" id="car">车辆 <span class="num">({{orderCarList.length}})</span></span>
+					<span class="item_type" id="product">商品 <span class="num">({{productList.length}})</span></span>
+				</iron-selector>
+				<div class="loading" hidden="{{!loading}}">
+					<paper-spinner active="{{loading}}"></paper-spinner>
+				</div>
+				<iron-scroll-threshold id="threshold" class="threshold" scroll-target="document" on-lower-threshold="loadMoreData">
+				<div class="car_table" id="car_table">
+					<table>
+						<thead>
+							<tr>
+								<td>订单名称</td>
+								<td>状态</td>
+								<td>操作</td>
+							</tr>
+						</thead>
+						<tbody>
+							
+							<template is="dom-repeat" items="{{orderCarList}}">
+								<tr>
+									<td class="detail_td">
+										<div class="imgBox" style="background: url(../../../images/default_bg.jpg);" on-click="_getCarDetail">
+											<img src$="{{item.defaultImgUrl}}" width="100%">
+										</div>
+										<div class="dec">
+											<div style="height: 33%">
+												<span class="brand">{{item.vehicleBrandName}}</span>
+												<span class="series">{{item.vehicleSeriesName}}</span>
+											</div>
+											<span class="model">{{item.vehicleModelName}}</span>
+											<span class="orderId">订单编号：
+												{{item.orderNumber}}
+												<template is="dom-if" if="{{_checkReserve(item.check)}}" restamp>
+													<i>已预订</i>
+												</template>
+											</span>
+										</div>
+									</td>
+									<td>
+										<template is="dom-if" if="{{_checkStatus(item.status,1)}}" restamp>
+											<img src="../../../images/order_car/confirm.png" width="30px" height="30px">
+											<div>已选店</div>
+										</template>
+										<template is="dom-if" if="{{_checkStatus(item.status,2)}}" restamp>
+											<img src="../../../images/order_car/confirm_no.png" width="30px" height="30px">
+											<div>待确认</div>
+										</template>
+										<template is="dom-if" if="{{_checkStatus(item.status,3)}}" restamp>
+											<img src="../../../images/order_car/confirm_store.png" width="30px" height="30px">
+											<div>待选店</div>
+										</template>
+									</td>
+									<td>
+										<template is="dom-if" if="{{_checkStatus(item.status,3)}}" restamp>
+											<div class="action" on-click="_chooseShop">选店</div>
+										</template>
+										<template is="dom-if" if="{{_checkStatus(item.status,1)}}" restamp>
+											<div class="action" on-click="_getCarOrderDetail">查看订单</div>
+										</template>
+										<div class="cancel" on-click="refundApply">申请退款</div>
+									</td>
+								</tr>
+							</template>
+						
+						</tbody>
+					</table>
+				</div>
+				</iron-scroll-threshold>
+
+				<iron-scroll-threshold id="threshold1" class="threshold" scroll-target="document" on-lower-threshold="loadMoreData">
+				<div class="product_table" id="product_table">
+					<table>
+						<thead>
+							<tr>
+								<td>订单名称</td>
+								<td>产品列表</td>
+								<td>操作</td>
+							</tr>
+						</thead>
+						<tbody>
+							<template is="dom-repeat" items="{{productList}}">
+								<tr>
+									<td class="detail_td product">
+										<div class="imgBox" on-click="_getProductDetail">
+											<img src$="{{item.productDetails.0.defaultImgUrl}}" width="100%">
+										</div>
+										<div class="dec">
+											{{item.productDetails.0.name}}
+										</div>
+									</td>
+									<td class="product_list">
+										<template is="dom-repeat" items="{{item.productDetails}}" as="product">
+											<div class="productItem">
+												{{product.name}} <span class="num">({{product.num}})</span>
+											</div>
+										</template>
+									</td>
+									<td>
+										<div class="action" on-click="_getProductOrderDetail">订单详情</div>
+										<div class="cancel">取消订单</div>
+									</td>
+								</tr>
+							</template>
+						</tbody>
+					</table>
+				</div>
+			</iron-scroll-threshold>
+			</div>
+			<!-- 退款流程界面 -->
+			<div id="refund" class="refund">
+				<div id="refund_reset" class="poplayer" on-click="resetRefund"></div>
+				<!-- 退款申请 -->
+				<lt-refund-apply data="{{orderDetail}}" id="refund_apply" class="refund_container" on-refund-apply="_changePage" on-back="resetRefund"></lt-refund-apply>
+				<!-- 退款成功（供应商不需要确认） -->
+				<lt-refund-success data="{{orderDetail}}" id="refund_success" class="refund_container" on-refund-success="resetRefund">
+				</lt-refund-success>
+				<!-- 退款等待（供应商需要确认） -->
+				<lt-refund-wait data="{{orderDetail}}" suppliersName="{{suppliersName}}" id="refund_wait" class="refund_container" on-refund-wait="resetRefund" on-refund-schedule="goSchedule"></lt-refund-wait>
+				<!-- 退款成功（供应商已经确认同意退款） -->
+				<lt-refund-new-success data="{{orderDetail}}" id="refund_new_success" class="refund_container" on-refund-new-success="resetRefund"></lt-refund-new-success>
+				<!-- 退款失败 -->
+				<lt-refund-fail data="{{orderDetail}}" id="refund_fail" class="refund_container" on-refund-fail="resetRefund"></lt-refund-fail>
+				<!-- 退款原因 -->
+				<lt-refund-reason data="{{orderDetail}}" id="refund_reason" class="refund_reason" on-refund-reason="resetRefund" on-refund-allow="allowRefund"></lt-refund-reason>
+				<lt-refund-schedule id="refund_schedule" class="refund_container"></lt-refund-schedule>
+			</div>
+		</div>
+		<!-- 获取订单列表 -->
+		<iron-ajax
+		    id="getOrderList"
+		    method="POST"
+		    headers='{{header}}'
+		    body = "{}"
+		    loading="{{loading}}"
+		    url="{{_calUserUrl('order/shopping/getPurchaseOrderList')}}"
+		    Content-Type="application/json"
+		    handle-as="json"
+		    >
+		</iron-ajax>
+	</template>
+	<script>
+		class ltOrderPage extends ltMixin(Polymer.Element){
+			static get is(){return "lt-order-page"}
+			static get properties(){
+				return {
+					selectType : {
+						type : String,
+						observer : "_checkType"
+					},
+					pageNo:{
+						type: Number,
+						value: 1
+					},
+					pageSize: {
+						type: Number,
+						value: 6
+					},
+					pageNo1:{
+						type: Number,
+						value: 1
+					},
+					pageSize1: {
+						type: Number,
+						value: 6
+					}
+				}
+			}
+			static get observers (){
+				return [
+
+				]
+			}
+			/**
+			 * 加载车辆更多数据
+			 * @param  {[type]} e [description]
+			 * @return {[type]}   [description]
+			 */
+			loadMoreData (e) {
+				console.log(e.target)
+				// get cart req,if login
+				// 判断车辆与商品
+				let tab = 0;
+				if (e.target.id == 'threshold') {
+					tab = 1;
+				} else if (e.target.id == 'threshold1') {
+					tab = 2;
+				}
+				// 发送请求
+             	if(header['X-CustomToken']){
+             		this.$.getOrderList.body = {
+             			userName : header["X-USERNAME"],
+             			firstResult: this.pageNo,
+             			maxResult: this.pageSize,
+             			tab: tab
+             		}
+             		this.$.getOrderList.generateRequest().completes.then(res => {
+             			console.log(res.response)
+						// do stuff here if success
+						if (tab == 1) {
+							this.pageNo += this.pageSize;
+						} else if(tab == 2) {
+							this.pageNo1 += this.pageSize1;
+						}
+						this.orderCarList = res.response.vehicleOrderDatas || [];
+						// 处理车的状态
+						this.orderCarList.forEach((item)=>{
+						if(item.status == "MEMBER_SELECT_SHOP"){
+							item.status = "1"; // 已选店
+						}else if(item.status == "SUPPLER_NOT_CONFIRM"){
+							item.status = "2"; // 待确认
+						}else{
+							item.status = "3"; // 待选店
+						}
+						})
+						this.productList = res.response.datas || [];
+					}).catch(err => {
+					  // do stuff here if errored
+					  console.error('getOrderList: ajax回调失败')
+					});
+             	}else{
+             		// 返回到主界面
+             		// this.dispatchEvent(new CustomEvent('confirm', {detail:{msg:"请先登录!"} ,bubbles: true, composed: true}));
+             		// setTimeout(function(){
+             		// 	location.hash = "#/home"
+             		// },2000)
+             	}
+			}
+			// 选店
+			_chooseShop (e){
+				var detail = e.model.__data.item;
+				// 将需要选店的车数据放入缓存
+				localStorage.setItem('shop_car_detail',JSON.stringify(detail));
+				location.hash = "#/choose-shop";
+			}
+			// 车辆详情
+			_getCarDetail (e) {
+				let carId = e.model.item.vehicleSalesUid;
+				if (this.checkApp() == 'android') {
+					window.app.goToCarDetail(carId)
+				} else if(this.checkApp() == 'ios'){
+					window.webkit.messageHandlers.iShopPushCar.postMessage(carId);
+				} else {
+					location.hash = "#/car-detail/" + carId;
+				}
+			}
+			// 商品详情
+			_getProductDetail (e) {
+				let productId = e.model.item.productDetails[0].uid;
+				if (this.checkApp() == 'android') {
+					window.app.goToProductDetail(productId);
+				} else if(this.checkApp() == 'ios') {
+					window.webkit.messageHandlers.iShopPushProduct.postMessage(productId);
+				} else {
+                	location.hash = "#/product-detail/" + productId;
+				}
+			}
+			// 产品
+			_getProductOrderDetail(e){
+				var detail = e.model.__data.item;
+				var obj = {};
+				// 将订单数据放入缓存;
+				obj.type = "product";
+				obj.detail = detail;
+				localStorage.setItem('order_detail',JSON.stringify(obj));
+				location.hash = "#/order-detail";
+			}
+			// 车订单详情
+			_getCarOrderDetail(e){
+				var detail = e.model.__data.item;
+				var obj = {};
+				// 将订单数据放入缓存;
+				obj.type = "vehicle";
+				obj.detail = detail;
+				localStorage.setItem('order_detail',JSON.stringify(obj));
+				location.hash = "#/order-detail";
+			}
+			// 检查订单状态
+			_checkStatus(status , val){
+				if(status == val){
+					return true
+				}else{
+					return false
+				}
+			}
+			/**
+			 * [_checkReserve 检查供应商是否预定]
+			 * @param  {[type]} val [Boolean]
+			 * @return {[type]}     [Boolean]
+			 */
+			_checkReserve (val) {
+				if (val) {
+					return true
+				}else {
+					return false
+				}
+			}
+			/*// 订单
+			_responseOrderList(e){
+				this.pageNo += this.pageSize;
+				this.orderCarList = e.detail.response.vehicleOrderDatas || [];
+				// 处理车的状态
+				this.orderCarList.forEach((item)=>{
+					if(item.status == "MEMBER_SELECT_SHOP"){
+						item.status = "1"; // 已选店
+					}else if(item.status == "SUPPLER_NOT_CONFIRM"){
+						item.status = "2"; // 待确认
+					}else{
+						item.status = "3"; // 待选店
+					}
+				})
+				this.productList = e.detail.response.datas || [];
+			}*/
+			ready() {
+				super.ready();
+				if (!this.checkApp()) {
+					this.shadowRoot.querySelector('.header').style.display = 'block';
+				} 
+			}
+			// 显示的table
+			_checkType (val){
+				this.$.car_table.hidden = true;
+				this.$.product_table.hidden = true;
+				if(val == "car"){
+					this.$.car_table.hidden = false;
+				}else{
+					this.$.product_table.hidden = false;
+				}
+			}
+			// 重置申请退款
+			resetRefund () {
+				this.$.refund.style.display = 'none';
+				this.dispatchEvent(new CustomEvent('header-close', {detail:{msg: '关闭header', result: false}, bubbles: true, composed: true}));
+			}
+			// 申请退款
+			refundApply (e) {
+				this.orderDetail = e.model.item;
+				this.dispatchEvent(new CustomEvent('header-close', {detail:{msg: '关闭header', result: true}, bubbles: true, composed: true}));
+				this.$.refund.style.display = 'block';
+				// 退款申请界面
+				this.$.refund_apply.style.display = 'block';
+				// 退款成功界面(未确认)
+				this.$.refund_success.style.display = 'none';
+				// 退款原因界面
+				this.$.refund_reason.style.display = 'none';
+				// 退款等待界面
+				this.$.refund_wait.style.display = 'none';
+				// 退款成功界面(已确认)
+				this.$.refund_new_success.style.display = 'none';
+				// 退款失败界面
+				this.$.refund_fail.style.display = 'none';
+			}
+			// 根据不同反馈，给出不同返回界面
+			_changePage (e) {
+				let check = e.detail.result
+				if (check.refund === 'success') {
+					this.$.refund_apply.style.display = 'none';
+					this.splice('orderCarList', this.orderCarList.findIndex(v => v == this.orderDetail), 1);
+					this.$.refund_success.style.display = 'block';
+				} else {
+					this.$.refund_apply.style.display = 'none';
+					this.$.refund_reason.style.display = 'block';
+				}
+			}
+			goSchedule (e) {
+				this.$.refund_schedule.style.display = 'block';
+			}
+			// 提交原因成功，等待。。。
+			allowRefund (e) {
+				let check = e.detail.result;
+				this.$.refund_reason.style.display = 'none';
+				if (check == 'wait') {
+					this.suppliersName = e.detail.data;
+					this.splice('orderCarList', this.orderCarList.findIndex(v => v == this.orderDetail), 1);
+					this.$.refund_wait.style.display = 'block';
+				} else if (check == 'success') {
+					this.$.refund_new_success.style.display = 'block';
+				} else if (check == 'fail') {
+					this.$.refund_fail.style.display = 'block';
+				}
+			}
+			show(){
+             	this.style.display= 'block';
+            }
+            hide(){
+             	this.dispatchEvent(new CustomEvent('hide',{}),false);
+				this.style.display= 'none';
+            }
+
+		}
+		customElements.define(ltOrderPage.is,ltOrderPage)
+	</script>
+</dom-module>

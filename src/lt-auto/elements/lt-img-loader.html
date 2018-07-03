@@ -1,0 +1,61 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html" />
+   <dom-module id="lt-img-loader">
+       <template>
+           <style include="lt-style">
+               :host {
+                   display: block;
+                   --img-width:100%;
+                   --img-ratio:.2;
+               }
+               #container{
+                 width: var(--img-width);
+                 padding-top: calc( var(--img-width) * var(--img-ratio));
+                 position: relative;
+               }
+               img{
+                 position: absolute;
+                 top:0;
+                 left: 0;
+                 width: 100%;
+                 border-top-left-radius: var(--app-radius);
+                 border-top-right-radius: var(--app-radius);
+                 -webkit-filter: grayscale(40%);
+	               filter: grayscale(40%);
+                 -webkit-transition: .3s ease-in-out;
+                 transition: .3s ease-in-out;
+               }
+               img:hover{
+                 -webkit-filter: grayscale(0);
+                 filter: grayscale(0);
+               }
+           </style>
+           <div id="container">
+             <img id="img" src="[[src]]" on-load="fadein" />
+           </div>
+       </template>
+
+       <script>
+           /**
+            * @customElement
+            * @polymer
+            */
+           class ltImgLoader extends Polymer.Element {
+               static get is() { return 'lt-img-loader'; }
+               static get properties() {
+                   return {
+
+                   }
+               }
+               fadein(){
+                 let intro = anime({
+                   targets:this.$.img,
+                   opacity:1,
+                   easing:'linear',
+                   duration:300
+                 })
+               }
+           }
+
+           window.customElements.define(ltImgLoader.is, ltImgLoader);
+       </script>
+   </dom-module>

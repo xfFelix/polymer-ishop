@@ -1,0 +1,83 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html" />
+<link rel="import" href="../../../bower_components/vaadin-valo-theme/vaadin-text-field.html" />
+<link rel="import" href="../../../bower_components/vaadin-text-field/vaadin-text-field.html" />
+   <dom-module id="lt-input">
+       <template>
+           <style include="lt-style">
+               :host {
+                   display: block;
+                   width: 100%;
+                   position: relative;
+               }
+               ::slotted(.suffix){
+                 position: absolute;
+                 right: 0;
+                 top: 23px;
+               }
+               vaadin-text-field{
+                 width: 100%;
+               }
+           </style>
+           <vaadin-text-field
+              autocomplete="{{autocomplete}}"
+              autocorrect="{{autocorrect}}"
+              autofocus="{{autofocus}}"
+              disabled="{{disabled}}"
+              error-message="{{errorMessage}}"
+              has-value="{{hasValue}}"
+              focused="{{focused}}"
+              invalid="{{invalid}}"
+              label="{{label}}"
+              list="{{list}}"
+              type="{{type}}"
+              maxlength="{{maxlength}}"
+              minlength="{{minlength}}"
+              name="{{name}}"
+              pattern="{{pattern}}"
+              placeholder="{{placeholder}}"
+              prevent-invalid-input="{{preventInvalidInput}}"
+              readonly="{{readonly}}"
+              required="{{required}}"
+              title="{{title}}"
+              value="{{value}}">
+            </vaadin-text-field>
+            <slot name="suffix" id="suffix"></slot>
+       </template>
+
+       <script>
+           /**
+            * @customElement
+            * @polymer
+            */
+           class ltInput extends Polymer.Element {
+               static get is() { return 'lt-input'; }
+               static get properties() {
+                   return {
+                     autocomplete:{type:String},
+                     autocorrect:{type:String,value:'off'},
+                     autofocus:{type:String},
+                     disabled:{type:Boolean,value:false},
+                     errorMessage:{type:String},
+                     focused:{type:Boolean,notify:true,readOnly:true},
+                     hasValue:{type:Boolean,notify:true,readOnly:true},
+                     invalid:{type:Boolean,notify:true},
+                     label:{type:String},
+                     list:{type:String},
+                     maxlength:{type:Number},
+                     minlength:{type:Number},
+                     name:{type:String},
+                     pattern:{type:String},
+                     placeholder:{type:String},
+                     preventInvalidInput:{type:Boolean},
+                     readonly:{type:Boolean},
+                     required:{type:Boolean},
+                     title:{type:String},
+                     type:{type:String},
+                     value:{type:String,notify:true}
+                   }
+               }
+           }
+
+           window.customElements.define(ltInput.is, ltInput);
+       </script>
+   </dom-module>

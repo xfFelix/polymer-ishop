@@ -1,0 +1,1123 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html" />
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html" />
+<link rel="import" href="../lt-mixin.html" />
+<link rel="import" href="../lt-style.html" />
+<dom-module id="lt-new-car-detail-page">
+    <template>
+        <style include="lt-style">
+            :host{
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            *{
+                box-sizing: border-box;
+            }
+            .container .panel {
+                width: 100%;
+                height: 500px;
+                /* Your DIVs Height */
+                /*z-index: 0;*/
+                /*-webkit-transform: translateZ( 0);*/
+                /*transform: translateZ( 0);*/
+                /*-webkit-transition: -webkit-transform 0.6s ease-in-out;*/
+                /*transition: transform 0.6s ease-in-out;*/
+                /*-webkit-backface-visibility: hidden;*/
+                /*backface-visibility: hidden;*/
+            }
+            .container .panel:first-child{
+                margin-top: 40px;
+            }
+            .container .panel:last-child{
+                margin-bottom: 70px;
+            }
+            .container .panel:nth-child(odd){
+                background-color: #ffffff;
+            }
+            .container .panel:nth-child(even){
+                background-color: #f5f5f5;
+            }
+            .EXE_NAV {
+                text-align: center;
+            }
+            .EXE_NAV nav {
+                width: 100%;
+                padding: 4px;
+                background: #fff;
+                position: fixed;
+                left: 0;
+                top: 0px;
+                z-index: 1;
+                box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.1);
+                overflow-x:hidden;
+            }
+            .EXE_NAV nav ul {
+                list-style: none;
+                margin: 0;
+                cursor: pointer;
+                white-space: nowrap;
+            }
+            .EXE_NAV ul li {
+                display: inline-block;
+                /*height: 24px;*/
+                padding: 3px 20px;
+                line-height: 24px;
+                color: #666;
+                cursor: pointer;
+            }
+            .EXE_NAV ul li.iron-selected{
+                color: #bb210b;
+                border-bottom: 2px solid #de3824;
+            }
+            .EXE_NAV ul li:hover {
+                color: #bb210b;
+            }
+            .left {
+                float: left;
+                width: 540px;
+                height: 360px;
+                padding: 20px 10px 10px 10px;
+            }
+            .right {
+                float: left;
+                width: 540px;
+                height: 360px;
+                padding: 10px;
+                text-align: left;
+            }
+
+            .title {
+                font-size: 26px;
+                font-weight: 500;
+            }
+
+            .brand {
+                display: inline-block;
+                margin-right: 10px;
+            }
+
+            .brand::after {
+                content: " | ";
+            }
+
+            .series {
+                display: inline-block;
+                margin-left: 0px;
+            }
+
+            .model {
+                display: inline-block;
+                color: #999999;
+                font-weight: 300;
+                margin-top: 8px;
+            }
+            .td_container{
+                display: flex;
+                flex-flow: row nowrap;
+            }
+            .table_icon {
+                width: 30px;
+                height: auto;
+                margin:auto 0;
+                /*display: inline-block;*/
+            }
+
+            .table_item {
+                display: flex;
+                flex-flow: column;
+                margin-left: 5px;
+                /*display: inline-block;*/
+            }
+
+            .color_icon {
+                width: 18px;
+                height: 18px;
+                line-height: 18px;
+                margin: 15px 5px;
+                border: 1px solid #dddddd;
+                float: left;
+            }
+
+            .color_item {
+                width: 100px;
+                height: 18px;
+                line-height: 18px;
+                margin-top: 2px;
+                margin: 15px 0;
+                float: left;
+            }
+
+            .compare{
+              border:1px solid var(--app-primary-orange);
+              color:var(--app-primary-orange);
+              background-color:#fff;
+            }
+
+            .buy{
+              color:#fff;
+              border:1px solid var(--app-primary-red);
+              background-color: var(--app-primary-red);
+            }
+            table {
+                font-family: arial, sans-serif;
+                border-collapse: collapse;
+                width: 100%;
+                margin-bottom: 20px;
+                table-layout: fixed;
+            }
+            td,th {
+                border: 1px solid #dddddd;
+                min-width: 125px;
+                text-align: left;
+                padding: 10px;
+                word-wrap: break-word;
+                word-break: break-all;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            tr:nth-child(even) {
+                background-color: #f5f5f5;
+            }
+            .unit {
+                color: #999;
+                font-size: 14px;
+                line-height: 18px;
+                white-space: normal;
+            }
+            .data {
+                font-size: 14px;
+                color: #333;
+                line-height: 18px;
+                white-space: normal;
+            }
+
+            .special_feature {
+                width: 25%;
+                float: left;
+                text-align: center;
+            }
+
+            .special_img {
+                width: 240px;
+                margin-bottom: 10px;
+                height: auto;
+            }
+
+            .media {
+                margin: 0 200px;
+                width: 680px;
+                height: auto;
+                border:1px solid #ddd;
+            }
+            #car_img {
+                /*background-image: url("/images/default_bg.jpg");*/
+                background-repeat: no-repeat;
+                width: 500px;
+                height: 440px;
+                border:1px solid #ddd;
+            }
+            .car {
+                width: 450px;
+                height: 260px;
+                margin-top: 90px;
+                margin-left: 25px;
+                height: auto;
+            }
+
+            .price {
+                color: red;
+                margin-top: 4px;
+                font-size: 40px;
+                line-height: 30px;
+                float: left;
+                white-space: nowrap;
+            }
+            .price span {
+                color: #222222;
+                padding: 5px;
+                font-size: 20px;
+            }
+            .action {
+              display: flex;
+              justify-content: space-between;
+            }
+            .section_title {
+                font-size: 30px;
+                text-align: center;
+                padding: 18px 0;
+                color: #666666;
+            }
+            .paper_slider{
+                width: 100%;
+                --paper-slide-height:auto;
+
+            }
+            .paper_slider paper-slide img{
+                width: 520px;
+                height:300px;
+                padding:1%;
+                border:1px solid #ddd;
+            }
+
+            .buttons span{
+              display: inline-flex;
+              padding: 8px;
+              border-radius: 4px;
+            }
+            .buttons img{
+              width: 20px;
+              height: 20px;
+            }
+            /*配置*/
+            #feature{
+                height: auto;
+                min-height: 150px;
+            }
+            #feature .feature_conent{
+                text-align:center;
+            }
+            /*已被售*/
+            .order_text{
+                min-width: 100px;
+                display: inline-block;
+                background: #ddd;
+                box-sizing: border-box;
+                padding: 10px;
+                border: 1px solid transparent;
+                border-radius: 10px;
+                color: #929292;
+            }
+            /*修改价格*/
+            .edit_button{
+                color: #fff;
+                background: #f75858;
+            }
+            /*mobiel style*/
+            @media only screen and (max-width:1080px) {
+                /* For mobile phones: */
+                .left,.right {
+                    width: 100%;
+                    float: none;
+                    height: auto;
+                }
+                .actions,.price{
+                    float: none;
+                }
+                .paper_slider paper-slide img{
+                    width: 100%;
+                    height:auto;
+                    border:1px solid #ddd;
+                }
+                .buttons img {
+                  display:none;
+                }
+                .price {
+                  font-size: 30px;
+                }
+            }
+            /*定义panel高度，滚动用到*/
+            .container .panel.mobile{
+                height: auto;
+            }
+
+            .main_content.mobile{
+                width: 100%;
+            }
+            #summary .main_content.mobile .imageBox{
+                height: auto;
+            }
+            #summary .main_content.mobile #car_img{
+                width: 100%;
+                height: auto;
+            }
+            #summary .main_content.mobile #car_img img{
+                width: 100%;
+                height: auto;
+                margin: 0;
+            }
+            #summary .main_content.mobile .table td{
+                min-width: 0;
+            }
+            #video .main_content.mobile video{
+                width: 100%;
+                height: auto;
+                margin: 0 auto;
+            }
+        </style>
+        <!-- 底部样式 -->
+        <style>
+            .footer{
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+                height: 60px;
+                background: #ddd;
+                box-sizing: border-box;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 3px;
+            }
+            .footer .user-info{
+                display: flex;
+                justify-content: flex-start;
+            }
+            .footer .user-info .avatar-box img{
+                width: 50px;
+                border-radius: 50px;
+            }
+            .footer .user-info .name-box{
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 5px;
+            }
+            .name-box .name{
+                font-weight: 600;
+            }
+            .name-box .company{
+                color: #989898;
+            }
+            .buttons{
+                position: relative;
+            }
+            .buttons .editPop{
+                position: absolute;
+                right: calc((100vw - 300px)/2);
+                top: 40px;
+                width: 300px;
+                background: #fff;
+                padding: 5px;
+                z-index: 2;
+                display: none;
+                border-radius: 12px;
+            }
+            .buttons .editPop.show{
+                display: block;
+            }
+            .generate-button{
+                display: flex;
+                justify-content: space-around;
+            }
+            .generate-button button{
+                max-width: 100%;
+                width: auto;
+                border: none;
+                padding: 10px;
+                font-size: 15px;
+                border-radius: var(--app-radius);
+                background: var(--app-button-bg);
+                color: var(--app-button-text);
+            }
+            .generate-button button.confirm-generate{
+                background: red;
+            }
+            .background{
+                width: 100vw;
+                height: 100vh;
+                position : fixed;
+                z-index: 1;
+                top: 0;
+                left: 0;
+                display: none;
+                background: #dddddda3;
+            }
+            .background.show{
+                display: block;
+            }
+        </style>
+        <div class="EXE_NAV">
+            <nav>
+                <ul on-click="_selectPanel">
+                    <li data-panel="summary" class="panel_title">概观</li>
+                    <li data-panel="feature" class="panel_title">其他配置</li>
+                    <li data-panel="photo" class="panel_title">外观／内饰</li>
+                    <li data-panel="video" class="panel_title">媒体</li>
+                    <!-- <li><span >购车流程</span> </li> -->
+                </ul>
+            </nav>
+        </div>
+        <section class="container">
+            <div class$="panel {{state}}" id="summary">
+                <div class$="main_content {{state}}">
+                    <div class="left imageBox">
+                        <div id="car_img" style="background: url(../../../images/default_bg.jpg);">
+                            <img class="car" src$="{{data.seriesDefaultImageURL}}" />
+                        </div>
+                    </div>
+                    <div class="right">
+                        <div class="title">
+                            <div class="brand">{{data.brandName}}</div>
+                            <div class="series">{{data.seriesName}}</div>
+                        </div>
+                        <div class="model">{{data.modelName}}</div>
+                        <br clear="both">
+                        <div class="color_icon" style="background-image:url({{data.bodyColorUrl}});"> </div>
+                        <div class="color_item">外：{{data.bodyColorName}}</div>
+                        <div class="color_icon" style="background-image:url({{data.interiorColorUrl}});"> </div>
+                        <div class="color_item">内：{{data.interiorColorName}}</div>
+                        <br clear="both"></br>
+                        <table class="table">
+                            <tr>
+                                <td>
+                                    <div class="td_container">
+                                        <div class="table_icon">
+                                            <img src="./images/emission.png" />
+                                        </div>
+                                        <div class="table_item">
+                                            <div class="unit">排量</div>
+                                            <div class="data">{{data.engineLayout}}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="td_container">
+                                        <div class="table_icon">
+                                            <img src="./images/energy.png" />
+                                        </div>
+                                        <div class="table_item">
+                                            <div class="unit">能源</div>
+                                            <div class="data">{{data.fuseSource}}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="td_container">
+                                        <div class="table_icon">
+                                            <img src="./images/size.png" />
+                                        </div>
+                                        <div class="table_item">
+                                            <div class="unit">长宽高（mm)</div>
+                                            <div class="data">{{data.lengthWidthHeight}}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="td_container">
+                                        <div class="table_icon">
+                                            <img src="./images/engine.png" />
+                                        </div>
+                                        <div class="table_item">
+                                            <div class="unit">发动机</div>
+                                            <div class="data">{{data.horsePower}}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="td_container">
+                                        <div class="table_icon">
+                                            <img src="./images/tranmittion.png" />
+                                        </div>
+                                        <div class="table_item">
+                                            <div class="unit">变速箱</div>
+                                            <div class="data">{{data.gearBox}}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="td_container">
+                                        <div class="table_icon">
+                                            <img src="./images/door.png" />
+                                        </div>
+                                        <div class="table_item">
+                                            <div class="unit">车门</div>
+                                            <div class="data">{{data.noOfDoors}}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="td_container">
+                                        <div class="table_icon">
+                                            <img src="./images/seat.png" />
+                                        </div>
+                                        <div class="table_item">
+                                            <div class="unit">座位</div>
+                                            <div class="data">{{data.noOfSeat}}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="td_container">
+                                        <div class="table_icon">
+                                            <img src="./images/shape.png" />
+                                        </div>
+                                        <div class="table_item">
+                                            <div class="unit">车型</div>
+                                            <div class="data">{{data.category}}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="td_container">
+                                        <div class="table_icon">
+                                            <img src="./images/drive.png" />
+                                        </div>
+                                        <div class="table_item">
+                                            <div class="unit">驱动</div>
+                                            <div class="data">{{data.engineType}}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="td_container">
+                                        <div class="table_icon">
+                                            <img src="./images/fuel.png" />
+                                        </div>
+                                        <div class="table_item">
+                                            <div class="unit">油箱容积</div>
+                                            <div class="data">{{data.tankCapacity}}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="td_container">
+                                        <div class="table_icon">
+                                            <img src="./images/tyre.png" />
+                                        </div>
+                                        <div class="table_item">
+                                            <div class="unit">轮胎尺寸</div>
+                                            <div class="data">{{data.hubSize}}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="td_container">
+                                        <div class="table_icon">
+                                            <img src="./images/oil.png" />
+                                        </div>
+                                        <div class="table_item">
+                                            <div class="unit">供油方式</div>
+                                            <div class="data">{{data.oilSupply}}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div class="action">
+                            <div class="price"><span>￥</span>{{data.price}}<span>万</span></div>
+                            <div class="buttons">
+                                <div class$="background {{isShow}}"></div>
+                                <!-- 编辑价格和联系人，电话 -->
+                                <span class="edit_button" on-click="_edit" hidden="{{!canEdit}}">修改价格</span>
+                                <span class="order_text" hidden="{{canPurchase}}"><img class="btn_icon" src="./images/lock.svg" />{{orderText}}</span>
+                                <div class$="editPop {{isShow}}">
+                                    <div class="userInfo">
+                                        <h2>请先修改信息</h2>
+                                        <lt-input label="销售人员 姓氏*" autofocus value="{{lastName}}" required></lt-input>
+                                        <lt-input label="销售人员 名字*" value="{{firstName}}" required></lt-input>
+                                        <lt-input id="phoneInput" label="手机*" autocomplete="tel-local" pattern="[0-9]*" prevent-invalid-input value="{{phoneNumber}}" required error-message="请输入手机号码"></lt-input>
+                                        <lt-input label="价格(万)*" required value="{{editedPrice}}"></lt-input>
+                                    </div>
+                                    <div class="generate-button">
+                                        <button on-click="_generateCard" class="confirm-generate">生成名片</button>
+                                        <button on-click="_cancleGenerate">取消</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class$="panel {{state}}" id="feature">
+                <div class$="main_content {{state}}">
+                    <div class="section_title"> 其他配置 </div>
+                    <div class="feature_conent">
+                        {{data.vehicleFeatures}}
+                    </div>
+                </div>
+            </div>
+            <!-- <div class$="panel {{state}}" id="EXE_DIV2">
+                <div class="main_content">
+                    <div class="section_title"> 卖点 </div>
+                    <div class="special_feature">
+                        <img class="special_img" src="./images/special.jpg" />
+                        <div id="special_text"> 智能照明系统</div>
+                    </div>
+                    <div class="special_feature">
+                        <img class="special_img" src="./images/special.jpg" />
+                        <div id="special_text"> 智能照明系统</div>
+                    </div>
+                    <div class="special_feature">
+                        <img class="special_img" src="./images/special.jpg" />
+                        <div id="special_text"> 智能照明系统</div>
+                    </div>
+                    <div class="special_feature">
+                        <img class="special_img" src="./images/special.jpg" />
+                        <div id="special_text"> 智能照明系统</div>
+                    </div>
+                </div>
+            </div> -->
+            <div class$="panel {{state}}" id="photo">
+                <div class$="main_content {{state}}">
+                    <div class="left">
+                        <div class="section_title"> 外观 </div>
+                        <!-- Beginning of Slider -->
+                        <l2t-paper-slider class="paper_slider" auto-progress slide-duration="4" total-slides="[[data.outsideSmallImgUrl.length]]">
+                            <template is="dom-repeat" items="{{data.outsideSmallImgUrl}}">
+                                <paper-slide><img src="{{item}}"></paper-slide>
+                            </template>
+                        </l2t-paper-slider>
+                        <!-- End of Slider -->
+                    </div>
+                    <div class="right">
+                        <div class="section_title"> 内饰 </div>
+
+                        <l2t-paper-slider class="paper_slider" total-slides="[[data.insideSmallImgUrl.length]]" auto-progress slide-duration="4">
+                            <template is="dom-repeat" items="{{data.insideSmallImgUrl}}">
+                                <paper-slide><img src="{{item}}"></paper-slide>
+                            </template>
+                        </l2t-paper-slider>
+                    </div>
+                </div>
+            </div>
+            <div class$="panel {{state}}" id="video">
+                <div class$="main_content {{state}}">
+                    <div class="section_title"> 媒体 </div>
+                    <video class="media" src="{{data.seriesShowVideoURL}}" controls="controls">
+                    </video>
+                </div>
+            </div>
+            <!-- <div class$="panel {{state}}" id="EXE_DIV5">
+                <div class="main_content">
+                    <div class="section_title"> 配置 </div>
+                    <table>
+                        <tr>
+                            <td>数据名称（单位）</td>
+                            <td>数据内容</td>
+                        </tr>
+                        <tr>
+                            <td>数据名称（单位）</td>
+                            <td>数据内容</td>
+                        </tr>
+                        <tr>
+                            <td>数据名称（单位）</td>
+                            <td>数据内容</td>
+                        </tr>
+                        <tr>
+                            <td>数据名称（单位）</td>
+                            <td>数据内容</td>
+                        </tr>
+                        <tr>
+                            <td>数据名称（单位）</td>
+                            <td>数据内容</td>
+                        </tr>
+                        <tr>
+                            <td>数据名称（单位）</td>
+                            <td>数据内容</td>
+                        </tr>
+                        <tr>
+                            <td>数据名称（单位）</td>
+                            <td>数据内容</td>
+                        </tr>
+                        <tr>
+                            <td>数据名称（单位）</td>
+                            <td>数据内容</td>
+                        </tr>
+                        <tr>
+                            <td>数据名称（单位）</td>
+                            <td>数据内容</td>
+                        </tr>
+                        <tr>
+                            <td>数据名称（单位）</td>
+                            <td>数据内容</td>
+                        </tr>
+                    </table>
+                    <br clear="both"></br>
+                </div>
+            </div> -->
+        </section>
+        <div class="footer" hidden="{{canEdit}}">
+            <div class="user-info">
+                <div class="avatar-box">
+                    <img src="../../../images/favicon-96x96.png" alt="公司">
+                </div>
+                <div class="name-box">
+                    <div class="name">
+                        {{data.lastName}} {{data.firstName}}
+                    </div>
+                    <span class="company">领骏达</span>
+                </div>
+            </div>
+            <div class="mobile-box">
+                联系方式： <a href="tel:{{data.phoneNumber}}">{{data.phoneNumber}}</a>
+            </div>
+        </div>
+        <!-- 获取具体车详细资料 -->
+        <iron-ajax
+            id="getDetail"
+            method="POST"
+            url="{{_calURL('shop/getVehicleDetailsByUid')}}"
+            Content-Type="application/json"
+            handle-as="json"
+            on-response="_responDetail">
+        </iron-ajax>
+        <!-- 生成名片 -->
+        <iron-ajax
+            id="generateCard"
+            method="POST"
+            url="{{_calURL('shop/createVehicleBusinessCard')}}"
+            Content-Type="application/json"
+            handle-as="json"
+            on-response="_responCreate">
+        </iron-ajax>
+        <!-- 获取名片详情 -->
+        <iron-ajax
+            id="getVehicleBusinessCard"
+            method="POST"
+            url="{{_calURL('shop/getVehicleBusinessCard')}}"
+            Content-Type="application/json"
+            handle-as="json"
+            on-response="_responBusinessCard">
+        </iron-ajax>
+        <!-- 获取微信分享签名 -->
+        <iron-ajax
+            id="getWxShare"
+            method="POST"
+            url="{{_calURL('shop/WxShare')}}"
+            Content-Type="application/json"
+            handle-as="json"
+            on-response="_getWxShare">
+        </iron-ajax>
+    </template>
+    <script>
+            /**
+           * @customElement
+           * @polymer
+           */
+        class ltNewCarDetailPage extends ltMixin(Polymer.Element) {
+            static get is() { return 'lt-new-car-detail-page'; }
+            static get properties() {
+                return {
+                    // 所有panel对应的scrollTop
+                    panelsScrollTop :{
+                        type : Array,
+                        value : ()=>{
+                            return []
+                        }
+                    },
+                    page : String,
+                    flag : String,
+                    vehicleId : {
+                        type : String,
+                        // observer : "_checkId"
+                    },
+                    data : {
+                        type : Object
+                    },
+                    state : {
+                        type : String
+                    },
+                    xtest: {
+                        type : String,
+                        value : () => {
+                            return 'sansan'
+                        }
+                    }
+                }
+            }
+            static get observers() {
+                return [
+                    "_checkId(vehicleId,page,flag)",
+                    "_checkFlag(data.flag)"
+                ]
+            }
+            // 名片响应
+            _responBusinessCard (e){
+                // 价格替换
+                var obj = e.detail.response.vehicleBusinessCard;
+                obj.price = obj.editedPrice;
+                this.data=  obj;
+                // this.data.price = this.data.editedPrice;
+                var title = this.data.brandName + '|' + this.data.seriesName + ' ' + this.data.modelName
+                document.title = title;
+                this.$.getWxShare.body = '{}'
+                this.$.getWxShare.generateRequest()
+            }
+            // 生成名片
+            _generateCard (){
+                if(this.lastName && this.firstName && this.phoneNumber && this.editedPrice){
+                    this.$.generateCard.body = {
+                        vehicleId : this.vehicleId,
+                        firstName : this.firstName,
+                        lastName : this.lastName,
+                        editedPrice : this.editedPrice,
+                        phoneNumber : this.phoneNumber
+                    }
+                    this.$.generateCard.generateRequest();
+                }
+            }
+            _responCreate(e){
+                var respon = e.detail.response;
+                window.location = "#/new-car-detail/" + respon.vehicleBusinessCardUid + "/1";
+                location.reload();
+            }
+            // 修改价格
+            _edit(){
+                if(navigator.userAgent.indexOf('Chrome') != -1){
+                    document.documentElement.scrollTop = 669;
+                }else{ //safari brower
+                    document.body.scrollTop = 669;
+                }
+                this.isShow = "show"
+                // this.editPop = true;
+                // this.$.editPop.introAnimation();
+            }
+            _cancleGenerate (){
+                this.isShow = '';
+                this.firstName = '';
+                this.lastName = '';
+                this.editedPrice = '';
+                this.phoneNumber = '';
+            }
+            // 是否已售或已预订
+            _checkFlag(val){
+                if(val){
+                    this.canPurchase = false;
+                    if(val == 1 || val == 2){
+                        this.orderText = "该车已被预订";
+                    }
+                    if(val == 3){
+                        this.orderText = "该车已被出售";
+                    }
+                }else{
+                    this.canPurchase = true;
+                }
+            }
+            // 请求detail
+            _checkId(val,page,flag){
+                if(val && page == "new-car-detail"){
+                    // 通过flag判断是否可以进行修改价格;
+                    if(flag){
+                        this.canEdit = false;
+                        this.$.getVehicleBusinessCard.body = {
+                            vehicleBusinessCardUid : val
+                        }
+                        this.$.getVehicleBusinessCard.generateRequest();
+                    }else{
+                        this.canEdit = true;
+                        this.$.getDetail.body = {
+                            // flag : (flag) ? flag : 0,
+                            vehicleId : val
+                        }
+                        this.$.getDetail.generateRequest();
+                    }
+                }
+            }
+            // 详细资料响应
+            _responDetail (e){
+                this.data = e.detail.response[0];
+                var title = this.data.brandName + '|' + this.data.seriesName + ' ' + this.data.modelName
+                document.title = title
+                this.$.getWxShare.body = '{}'
+                this.$.getWxShare.generateRequest()
+            }
+            // 选择panel；
+            setPanel(panel){
+                var panels = this.shadowRoot.querySelectorAll('.panel_title');
+                for(var i = 0 ; i < panels.length; i ++){
+                    panels[i].classList.remove('iron-selected');
+                    if(panel == panels[i].getAttribute('data-panel')){
+                        panels[i].classList.add('iron-selected');
+                    }
+                }
+            }
+            _selectPanel(e){
+                // 兼容性
+                var pathArr = e.composedPath();
+                // 判断选中那个li标签;
+                if(pathArr[0].tagName == "LI"){
+                    var selectPanel = pathArr[0].getAttribute('data-panel');
+                    this.setPanel(selectPanel);
+                    this.goPanel(selectPanel);
+                }
+            }
+            constructor(){
+                super();
+            }
+            scrollFun(){
+                var timeoutRef,that = this;
+                // 防止一直频繁调用；
+                if(timeoutRef){
+                    clearTimeout(timeoutRef);
+                }
+                timeoutRef = setTimeout(that.scrollEvent(), 50);
+            }
+
+            scrollEvent(){
+                // 滚动的高度;
+                var scrollTop = this.getScrollTop();
+                this._panelsOffsetTop();//重新获取所有pannel的offsetTop;
+                for(var i = 0 ; i < this.panelsScrollTop.length; i ++){
+                    if(i == this.panelsScrollTop.length - 1){
+                        this.setPanel(this.panelsScrollTop[i].panel);
+                        break;
+                    }
+                    if(this.panelsScrollTop[i].scrollTop <= scrollTop && scrollTop < this.panelsScrollTop[i+1].scrollTop){
+                        this.setPanel(this.panelsScrollTop[i].panel);
+                        break;
+                    }
+                }
+            }
+            ready(){
+                super.ready();
+                // 定义滚动监听事件
+                this._boundListener = this.scrollFun.bind(this);
+            }
+            // 获取所有panel对应的offsetTopx及显示需要的scrolltop;
+            _panelsOffsetTop(){
+                var panels = this.shadowRoot.querySelectorAll('.panel');
+                var arr = [];
+                for(var i = 0 ; i < panels.length; i++){
+                    arr.push({
+                        panel : panels[i].id,
+                        scrollTop : panels[i].offsetTop - 90
+                    })
+                }
+                this.panelsScrollTop = arr;
+            }
+            // link to panel;
+            goPanel(val){
+                if(val){
+                    // 通过设置scrolltop滚动;需要考虑兼容;
+                    var offsetTop = this.$[val].offsetTop; //选中panel的offsettop；
+                    // 减去顶部固定的菜单栏高度;
+                    if(/Android|webOS/i.test(navigator.userAgent)){
+                        document.documentElement.scrollTop = offsetTop - 90;
+                        document.body.scrollTop = offsetTop - 90;
+                    }else if(/iPhone|iPod|BlackBerry/i.test(navigator.userAgent)){
+                        document.body.scrollTop = offsetTop - 90;
+                        // document.documentElement.scrollTop = offsetTop - 90;
+                    }else{
+                         document.documentElement.scrollTop = offsetTop - 90;
+                    }
+
+                    // if(navigator.userAgent.indexOf('Chrome') != -1){
+                    //     document.documentElement.scrollTop = offsetTop - 90;
+                    // }else{ //safari brower
+                    //     document.body.scrollTop = offsetTop - 90;
+                    // }
+                }
+            }
+            show() {
+                this.style.display = 'block';
+                this._panelsOffsetTop();
+                // 初始化选择“概览”
+                this.setPanel('summary');
+                window.addEventListener('scroll', this._boundListener);
+
+            }
+            hide() {
+                this.dispatchEvent(new CustomEvent('hide', {}), false);
+                this.style.display = 'none';
+                window.removeEventListener('scroll', this._boundListener)
+            }
+            _getWxShare (e) {
+                this.wxInit(e.detail.response)
+            }
+            wxInit (sd) {
+                let links = window.location.href // 分享出去的链接
+                let title = document.title  // 分享的标题
+                let desc = this.data.vehicleFeatures // 分享的详情介绍
+                let imgUrl = this.data.seriesDefaultImageURL
+                wx.config({
+                    debug: false,
+                    appId: sd.appId,
+                    timestamp: sd.timestamp,
+                    nonceStr: sd.noncestr,
+                    signature: sd.signature,
+                    jsApiList: [
+                        'onMenuShareTimeline','onMenuShareAppMessage','onMenuShareQQ','onMenuShareWeibo','onMenuShareQZone'
+                    ]
+                })
+                wx.ready(function () {
+                    wx.onMenuShareTimeline({
+                        title: title, // 分享标题
+                        desc: desc, // 分享描述
+                        link: links, // 分享链接
+                        imgUrl: imgUrl, // 分享图标
+                        success: function () {
+                            console.log('分享成功')
+                        },
+                        cancel: function () {
+                            console.log('分享失败')
+                        }
+                    })
+                    wx.onMenuShareAppMessage({
+                        title: title, // 分享标题
+                        desc: desc, // 分享描述
+                        link: links, // 分享链接
+                        imgUrl: imgUrl, // 分享图标
+                        success: function () {
+                            console.log('分享成功')
+                        },
+                        cancel: function () {
+                            console.log('分享失败')
+                        }
+                    })
+                    // 微信分享菜单测试
+                    wx.onMenuShareAppMessage({
+                        title: title, // 分享标题
+                        desc: desc, // 分享描述
+                        link: links, // 分享链接
+                        imgUrl: imgUrl, // 分享图标
+                        success: function () {
+                            console.log('分享成功')
+                        },
+                        cancel: function () {
+                            console.log('分享失败')
+                        }
+                    })
+                    wx.onMenuShareQQ({
+                        title: title, // 分享标题
+                        desc: desc, // 分享描述
+                        link: links, // 分享链接
+                        imgUrl: imgUrl, // 分享图标
+                        success: function () {
+                            console.log('分享成功')
+                        },
+                        cancel: function () {
+                            console.log('分享失败')
+                        }
+                    })
+                    wx.onMenuShareWeibo({
+                        title: title, // 分享标题
+                        desc: desc, // 分享描述
+                        link: links, // 分享链接
+                        imgUrl: imgUrl, // 分享图标
+                        success: function () {
+                            console.log('分享成功')
+                        },
+                        cancel: function () {
+                            console.log('分享失败')
+                        }
+                    })
+                    wx.onMenuShareQZone({
+                        title: title, // 分享标题
+                        desc: desc, // 分享描述
+                        link: links, // 分享链接
+                        imgUrl: imgUrl, // 分享图标
+                        success: function () {
+                            console.log('分享成功')
+                        },
+                        cancel: function () {
+                            console.log('分享失败')
+                        }
+                    })
+                })
+                wx.error(function (res) {
+                    alert("error")
+                    // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
+                })
+            }
+        }
+        window.customElements.define(ltNewCarDetailPage.is, ltNewCarDetailPage);
+    </script>
+</dom-module>

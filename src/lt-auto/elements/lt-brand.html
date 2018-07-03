@@ -1,0 +1,44 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html" />
+
+<dom-module id="lt-brand">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+			.brand_item{
+			    display: flex;
+			    flex-direction: column;
+			    justify-content: center;
+			    align-items: center;
+			    padding:8px 0px;
+			    box-sizing: border-box;
+			    width: 68px;
+					font-size:14px;
+					color:#666;
+			    text-align: center;
+			    /*word-break: break-all;*/
+			}
+			.brand_item img{
+			    width: 40px;
+			    height:40px;
+			    margin-bottom: 5px;
+			}
+		</style>
+		<div class="brand_item">
+		    <img src="{{data.brandLogoImageURL}}">
+		    <span>{{data.brandName}}</span>
+		</div>
+	</template>
+	<script>
+		class ltBrand extends Polymer.Element{
+			static get is(){return "lt-brand"}
+			static get properties(){
+				return {
+					data : Object,
+				}
+			}
+		}
+		customElements.define(ltBrand.is,ltBrand)
+	</script>
+</dom-module>

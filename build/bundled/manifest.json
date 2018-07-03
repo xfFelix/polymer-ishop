@@ -1,0 +1,6 @@
+{
+  "name": "lt-auto",
+  "short_name": "lt-auto",
+  "start_url": "/",
+  "display": "standalone"
+}

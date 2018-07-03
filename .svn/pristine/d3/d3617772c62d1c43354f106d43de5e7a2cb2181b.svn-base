@@ -1,0 +1,46 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html" />
+
+<dom-module id="lt-refund-success">
+	<template>
+		<link rel="stylesheet" type="text/css" href="/src/lt-auto/css/refund-success.css">
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		<div class="refund">
+		<div class="refund_container">
+			<div class="left_icon">
+				<img src="../../../images/pass.jpg">
+			</div>
+			<div class="right_content">
+				<div class="content_title">
+					<p>你好！</p>
+				</div>
+				<div class="content_text">
+					<p>您的退款申请已经通过,4小时内自动退款。</p>
+					<p class="text_shoper">商户：领骏达（未确认）</p>
+				</div>
+				<div class="content_button">
+					<div on-click="cancelPage">了解</div>
+				</div>
+			</div>
+		</div>
+		</div>
+	</template>
+	
+	<script>
+		class ltRefundSuccess extends Polymer.Element{
+			static get is(){return "lt-refund-success"}
+			static get properties(){
+				return {
+					data : Object,
+				}
+			}
+			cancelPage () {
+				this.dispatchEvent(new CustomEvent('refund-success', {detail:{msg:"未确认订单，可直接退款"}}));
+			}
+		}
+		customElements.define(ltRefundSuccess.is,ltRefundSuccess)
+	</script>
+</dom-module>

@@ -1,0 +1,480 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html" />
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html" />
+<link rel="import" href="../../../bower_components/paper-spinner/paper-spinner.html" />
+<link rel="import" href="../elements/lt-brand.html" />
+<link rel="import" href="../elements/lt-search-type.html" />
+<link rel="import" href="../elements/lt-series-card.html" />
+<dom-module id="lt-series-page">
+	<template>
+		<style include="lt-style">
+			:host {
+                display: block;
+                padding: 15px 25px;
+                box-sizing: border-box;
+			}
+			.header{
+				color: rgba(0,0,0,0.6);
+			}
+			.header span:last-child{
+				color :  var(--app-primary-blue);
+			}
+			.conditionBox{
+				padding: 20px 0;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+			.conditionBox .condition{
+				display: inline-block;
+				background: #f5f5f5;
+				min-width: 70px;
+				padding: 6px;
+				border: 1px solid #dedede;
+			}
+			.conditionBox .condition + .condition{
+				margin-left: 15px
+			}
+			.conditionBox .clearAll{
+				display: none;
+				padding: 6px;
+				min-width: 120px;
+				background: #f5f5f5;
+				border: 1px solid #dddddd;
+				text-align: center;
+			}
+			.delIcon{
+				color: #00000054;
+    			transition: all .5s;
+    			cursor: pointer;
+			}
+			.delIcon.f_r{
+				margin-left: 20px;
+			}
+			.delIcon:hover{
+				transform: scale(1.5);
+				color: #ff1212;
+			}
+			.allConditionBox{
+				padding: 15px;
+				background: #fff;
+				margin: 10px 0;
+			}
+			.allConditionBox .brandBox .allLetters{
+				padding-bottom: 10px;
+				border-bottom: 2px solid #ddd;
+			}
+			.letter{
+				display: inline-block;
+				width: 20px;
+				text-align: center;
+				position: relative;
+			}
+			.letter.iron-selected{
+				color :var(--app-primary-blue);
+			}
+			.letter.iron-selected::before{
+				/*图片实现箭头*/
+				/*content: url(../../../images/menu_arrow.jpg);
+				display: block;
+				position: absolute;
+				bottom: -17px;
+				left: 5px;*/
+				/*border实现arrow箭头*/
+				width: 0;
+				height: 0;
+				position: absolute;
+				bottom: 2px;
+				width: 2;
+			  height: 0px;
+				content: url(../../../images/menu_arrow.jpg);
+			}
+			.brandBox .brandContainer{
+				margin-top: 10px;
+				display: flex;
+				flex-wrap: wrap;
+			}
+			lt-brand{
+				border: 1px solid transparent;
+				border-radius: 5px;
+				margin-right: 10px;
+			}
+			.brandBox .brandContainer lt-brand:hover,lt-brand.iron-selected{
+				background: #d3e5fa;
+				color: #fff;
+			}
+			.searchTypeBox{
+				display: flex;
+				justify-content: space-between;
+			}
+			.searchTypeBox lt-search-type{
+				width: 33%;
+			}
+			.seriesList{
+				display: flex;
+				/*justify-content: space-between;*/
+				flex-wrap: wrap;
+			}
+			.loading{
+				text-align: center;
+			}
+			.noData {
+				text-align: center;
+			}
+			/*mobile style*/
+			@media screen and (max-width:620px){
+				:host{
+					padding: 10px;
+					font-size: 14px;
+				}
+				.conditionBox{
+					flex-direction: column;
+					align-items: flex-start;
+				}
+				.conditionBox .clearAll{
+					margin-top: 10px;
+				}
+				.letter.iron-selected::before{
+					content: "";
+					display:none;
+				}
+				.searchTypeBox{
+					flex-direction: column;
+				}
+				.searchTypeBox lt-search-type{
+					width: 100%;
+				}
+				.seriesList{
+					flex-direction: column;
+				}
+			}
+
+			@media screen and (max-width:620px){
+				:host{
+					padding:24px;
+					font-size: 16px;
+					line-height:30px;
+				}
+
+				.letter.iron-selected::before{
+					content: "";
+					display:none;
+				}
+			}
+
+			@media screen and (max-width:1079px) and (min-width:621px){
+					:host{
+					padding:24px;
+					font-size: 16px;
+					line-height:30px;
+					}
+						.letter.iron-selected::before{
+							content: "";
+							display:none;
+						}
+					}
+				}
+		</style>
+		<div class="pageContainer">
+			<div class="header">
+				当前位置：<span>首页</span> > <span class="">车系列表</span>
+			</div>
+			<div class="conditionBox">
+				<div>
+					已选条件：
+					<template is="dom-repeat" items="{{conditionArr}}">
+						<span class="condition" data-type$="{{item.type}}">{{item.text}}<span class="delIcon f_r" on-click="_delCondition">X</span></span>
+					</template>
+				</div>
+				<div id="clearAll" class="clearAll" on-click="_cleanSearch">
+					<span class="delIcon f_l">X</span>
+					清除全部
+				</div>
+			</div>
+			<div class="allCondition">
+				精确搜寻：<span>({{seriesArr.length}})</span>
+				<div class="allConditionBox">
+					<div class="brandBox">
+						<div class="allLetters">
+							<iron-selector selected="{{selectedLetter}}" attr-for-selected="key">
+								<template is="dom-repeat" items="{{allBrand}}" filter="isEnglish">
+									<span class="letter" key="{{item.key}}">{{item.key}}</span>
+								</template>
+							</iron-selector>
+						</div>
+						<iron-selector id="brandContainer" class="brandContainer" selected="{{brandInd}}" attr-for-selected="id">
+							<template is="dom-repeat" items="{{brandList}}" id="ltBrandRepeat">
+							    <lt-brand data="{{item}}" id="{{_setBrandId(item.brandId)}}"></lt-brand>
+							</template>
+						</iron-selector>
+					</div>
+					<div class="searchTypeBox">
+						<lt-search-type selected="{{vehicleType}}" attr-for-selected="id">
+						    <div slot="title">
+						        按车身
+						    </div>
+						    <span id="car">轿车</span>
+						    <span id="suv">SUV</span>
+						    <span id="mpv">MPV</span>
+						    <span id="run">跑车</span>
+						</lt-search-type>
+						<lt-search-type selected="{{priceType}}" attr-for-selected="id">
+						    <div slot="title">
+						        按价位
+						    </div>
+						    <span id="price30">30万以下</span>
+						    <span id="price50">30-50万</span>
+						    <span id="price80">50-80万</span>
+						    <span id="price100">80-100万</span>
+						    <span id="price150">100-150万</span>
+						    <span id="price150_">150万以上</span>
+						</lt-search-type>
+						<lt-search-type selected="{{seatType}}" attr-for-selected="id">
+						    <div slot="title">
+						        按座位数
+						    </div>
+						    <span id="seat2">2座</span>
+						    <span id="seat4">4-5座</span>
+						    <span id="seat6">6-7座</span>
+						    <span id="seat7">7座以上</span>
+						</lt-search-type>
+					</div>
+				</div>
+			</div>
+			<div class="loading" hidden="{{!isloading}}">
+				<paper-spinner active></paper-spinner>
+			</div>
+			<div class="noData" hidden="{{!noData}}">
+				没有数据
+			</div>
+			<div class="seriesList">
+				<template is="dom-repeat" items="{{seriesArr}}">
+					<lt-series-card data="{{item}}" on-click="_getModel"></lt-series-card>
+				</template>
+			</div>
+		</div>
+		<!-- 获取所有品牌 -->
+		<iron-ajax
+		    id="getSalesBrand"
+		    method="POST"
+		    url="{{_calURL('shop/getVehicleBrandCodeOnSales')}}"
+		    Content-Type="application/json"
+		    body="{}"
+		    handle-as="json"
+		    on-response="_responseSalesBrand">
+		</iron-ajax>
+		<!-- 获取车辆 -->
+		<iron-ajax
+		    id="getSalesSeries"
+		    method="POST"
+		    url="{{_calURL('shop/getVehicleSeriesCodeOnSales')}}"
+		    Content-Type="application/json"
+		    handle-as="json"
+		    loading = "{{isloading}}"
+		    on-response="_responseSalesSeries">
+		</iron-ajax>
+	</template>
+	<script>
+		class ltSeriesPage extends ltMixin(Polymer.Element){
+			static get is(){return 'lt-series-page'}
+			static get properties(){
+				return {
+					letterArr : {
+						type : Array,
+						value : () => {
+							return [
+								"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"
+							]
+						}
+					},
+					page:{
+						type : String,
+						observer : "_checkPage"
+					},
+					selectedLetter : {
+						type : String,
+						observer : "_letterChange"
+					},
+					conditionArr : {
+						type : Array,
+						observer: '_numChange'
+					},
+					firstLoad : {
+						type : Boolean,
+						value :false
+					},
+					seriesArr :{
+						type : Array,
+					}
+				}
+			}
+			static get observers() {
+				return [
+					"_checkSearch(brandInd,vehicleType,priceType,seatType)"
+				]
+			}
+			isEnglish(item) {
+				return item.key != '#';
+			}
+			// 设置品牌ID,不能以数字开头
+			_setBrandId(val){
+				return "id" + val
+			}
+			// 获取车型
+			_getModel(e){
+				var data = e.model.__data.item;
+				// 将seriesid和brandid放入缓存;
+				localStorage.setItem('brandId',data.brandId);
+				localStorage.setItem('seriesId',data.seriesId);
+				location.hash = "#/model"
+			}
+			// 删除搜索条件
+			_delCondition (e){
+				var targetType = e.composedPath()[1].getAttribute('data-type');
+				switch(targetType){
+					case "brand":this.brandInd = null; break;
+					case "vehicle": this.vehicleType = null;break;
+					case "price":this.priceType = null;break;
+					case "seat":this.seatType= null;break;
+				}
+			}
+			_responseSalesSeries(e){
+				var arr = e.detail.response.seriesPage || [];
+				this.seriesArr = arr;
+				if(arr.length == 0){
+					this.noData = true;
+				}else{
+					this.noData = false;
+				}
+			}
+			// 清空搜索条件
+			_cleanSearch(){
+				this.conditionArr = [];
+				this.setProperties({
+					brandInd:null,
+					vehicleType:null,
+					priceType:null,
+					seatType:null
+				})
+			}
+			// 搜索条件
+			_checkSearch(brand,vehicle,price,seat){
+				// if(!this.firstLoad){
+				// 	return
+				// }
+				var arr = [],requestBody = {};
+				if(brand){
+					arr.push({
+						"text" : this.shadowRoot.querySelector("#" + brand).data.brandName,
+						"type" : "brand"
+					})
+					requestBody.brandId = brand.substring(2);
+				}
+				if(vehicle){
+					arr.push({
+						"text": this.shadowRoot.querySelector("#" + vehicle).innerText,
+						"type":"vehicle"
+					})
+				}
+				if(price){
+					arr.push({
+						"text":this.shadowRoot.querySelector("#" + price).innerText,
+						"type":"price"
+					})
+					switch(price){
+						case "price30":requestBody.highestPrice = "30"; break;
+						case "price50":requestBody.lowestPrice = "30";requestBody.highestPrice = "50"; break;
+						case "price80":requestBody.lowestPrice = "50";requestBody.highestPrice = "80";break;
+						case "price100":requestBody.lowestPrice = "80";requestBody.highestPrice = "100";break;
+						case "price150":requestBody.lowestPrice = "100";requestBody.highestPrice ="150";break;
+						case "price150_":requestBody.lowestPrice = "150";break;
+					}
+				}
+				if(seat){
+					arr.push({
+						"text":this.shadowRoot.querySelector("#" + seat).innerText,
+						"type":"seat"
+					})
+					switch(seat){
+						case "seat2":requestBody.leastNoOfSeat="2"; requestBody.mostNoOfSeat="2"; break;
+						case "seat4":requestBody.leastNoOfSeat = "4";requestBody.mostNoOfSeat = "5"; break;
+						case "seat6":requestBody.leastNoOfSeat = "6";requestBody.mostNoOfSeat = "7";break;
+						case "seat7":requestBody.leastNoOfSeat = "7";break;
+					}
+				}
+				this.conditionArr = arr;
+				this.$.getSalesSeries.body = requestBody;
+				this.$.getSalesSeries.generateRequest();
+			}
+			// 搜索条件变换
+			_numChange (val) {
+				if (val) {
+					if (val.length >= 2) {
+						this.$.clearAll.style.display = 'inline'
+					} else {
+						this.$.clearAll.style.display = 'none'
+					}
+				}
+			}
+			// 切换字母
+			_letterChange(val){
+				if(val){
+					var that = this;
+					// 切换时清空已选品牌
+					if(this.firstLoad){
+						this.brandInd = null;
+					}
+					for(var i = 0 ; i < this.allBrand.length; i ++){
+						if(this.allBrand[i].key == val){
+							this.brandList = this.allBrand[i].value;
+							this.$.ltBrandRepeat.render();//保证lt-brand渲染完成；
+							return
+						}
+					}
+					// 没有对应数据置空
+					this.brandList = [];
+				}
+			}
+			// 所有品牌
+			_responseSalesBrand(e){
+				this.allBrand = e.detail.response.brandPage || [];
+				// 默认“A”;
+				// this.selectedLetter = "A";
+				var arr = [];
+				var selectBrandId ;
+				if(searchType.brand){
+					this.selectedLetter = searchType.brand.firstWordPy;
+					selectBrandId = "id" + searchType.brand.brandId;
+				}else{
+					// 默认“A”;
+					this.selectedLetter = "A";
+					selectBrandId = null;
+				}
+				this.setProperties({
+					brandInd : selectBrandId,
+					vehicleType:searchType.vehicleType || null,
+					priceType:searchType.price || null,
+					seatType:searchType.seat || null
+				})
+				// 首次加载；
+				this.firstLoad = true;
+			}
+			_checkPage(val){
+				if(val == "series"){
+					// 获取所有品牌,sync;
+					this.$.getSalesBrand.generateRequest();
+				}
+			}
+			show(){
+            	this.style.display= 'block';
+            }
+            hide(){
+            	// 离开该页面设置首次加载未false；
+            	this.firstLoad = false;
+            	this.dispatchEvent(new CustomEvent('hide',{}),false);
+            	this.style.display= 'none';
+            }
+
+		}
+		customElements.define(ltSeriesPage.is,ltSeriesPage)
+	</script>
+</dom-module>

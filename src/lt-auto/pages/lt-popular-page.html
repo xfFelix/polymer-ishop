@@ -1,0 +1,113 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html" />
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html" />
+<link rel="import" href="../../../bower_components/paper-spinner/paper-spinner.html" />
+<link rel="import" href="../elements/lt-model-card.html" />
+
+<dom-module id="lt-popular-page">
+	<template>
+		<style include="lt-style">
+			:host {
+                display: block;
+                padding: 15px 25px;
+                box-sizing: border-box;
+			}
+			.pageContainer{
+				max-width: 1080px;
+				margin:0 auto;
+			}
+			.header{
+				color: rgba(0,0,0,0.6);
+			}
+			.header span:last-child{
+				color :  var(--app-primary-blue);
+			}
+			.carList{
+				display: flex;
+				flex-wrap: wrap;
+			}
+			footer{
+				text-align: center;
+			}
+			@media screen and (max-width:620px){
+				:host{
+					padding:10px;
+					font-size: 14px;
+				}
+				.carList{
+					flex-direction: column;
+				}
+			}
+
+		</style>
+		<div class="pageContainer">
+			<div class="header">
+				当前位置：<span>首页</span> > <span>编辑之选</span> > <span>{{popularItem.title}}</span>
+			</div>
+			<div class="carList">
+				<template is="dom-repeat" items="{{data}}">
+					<lt-model-card data="{{item}}" on-click="_getDetail"></lt-model-card>
+				</template>
+			</div>
+			<!-- <footer>
+				<paper-spinner active="{{isLoading}}" hidden="{{withoutData}}"></paper-spinner>
+				<div hidden="{{!withoutData}}">
+					已加载全部数据
+				</div>
+			</footer> -->
+		</div>
+		<!-- 获取编辑之选 -->
+        <iron-ajax
+            id="getPopularVehicle"
+            method="POST"
+            url="{{_calURL('shop/getPopularVehicle')}}"
+            Content-Type="application/json"
+            handle-as="json"
+            on-response="_responsePopular">
+        </iron-ajax>
+	</template>
+	<script>
+		class ltPopularPage extends ltMixin(Polymer.Element){
+			static get is(){return 'lt-popular-page'}
+			static get properties(){
+				return{
+					sortType:String,
+					page : {
+						type : String,
+						observer : "_pageChange"
+					}
+				}
+			}
+			constructor(){
+				super();
+			}
+			//跳转到车辆详情
+			_getDetail (e){
+				var uid = e.model.__data.item.uid;
+				location.hash = "#/car-detail/" + uid;
+			}
+			_pageChange(val){
+				if(val == "popular"){
+					this.popularItem = JSON.parse(localStorage.getItem('popularItem'));
+					// var state = localStorage.getItem('popularItem');
+					// 获取列表
+					this.$.getPopularVehicle.body = {
+						state : this.popularItem.state
+					}
+					this.$.getPopularVehicle.generateRequest();
+					// this.data = data;
+				}
+			}
+			_responsePopular(e){
+				this.data = e.detail.response.popularVehicle[0].vehicleStockSingleViewList|| [];
+			}
+			show(){
+            	this.style.display= 'block';
+            }
+            hide(){
+            	this.dispatchEvent(new CustomEvent('hide',{}),false);
+            	this.style.display= 'none';
+            }
+		}
+		customElements.define(ltPopularPage.is,ltPopularPage)
+	</script>
+</dom-module>

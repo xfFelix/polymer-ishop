@@ -1,0 +1,66 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html" />
+
+<dom-module id="lt-refund-schedule">
+	<template>
+		<link rel="stylesheet" type="text/css" href="/src/lt-auto/css/refund-schedule.css">
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		<div class="refund">
+		<div class="refund_container">
+			<div class="container_title">
+				<p>退款申请已经传达</p>
+			</div>
+			<div class="container_content">
+				<div class="content_first">
+					<p class="first_title red">
+						<span class="circle"></span>
+						退款已经完成
+					</p>
+					<p>操作人：SC01</p>	
+					<p>2018-04-01    15:38:01</p>				
+				</div>
+				<div class="content_first">
+					<p class="first_title">
+						<span class="circle"></span>
+						退款申请已经获得通过，请耐心等待。
+					</p>
+					<p>操作人：SC01</p>	
+					<p>2018-04-01    15:38:01</p>				
+				</div>
+				<div class="content_first">
+					<p class="first_title">
+						<span class="circle"></span>
+						退款提交成功，请等待处理结果。
+					</p>
+					<p>操作人：SC01</p>	
+					<p>2018-04-01    15:38:01</p>				
+				</div>
+			</div>
+			<div class="container_end">
+				<div class="end_back">返回</div>
+			</div>
+		</div>
+		</div>
+	</template>
+	
+	<script>
+		class ltRefundSchedule extends Polymer.Element{
+			static get is(){return "lt-refund-schedule"}
+			static get properties(){
+				return {
+					data : Object,
+				}
+			}
+			cancelPage(){
+				this.dispatchEvent(new CustomEvent('refund-wait', {detail:{msg:"退款等待"}}));
+			}
+			goSchedule () {
+				this.dispatchEvent(new CustomEvent('refund-schedule', {detail:{msg:"退款进度"}}));
+			}
+		}
+		customElements.define(ltRefundSchedule.is,ltRefundSchedule)
+	</script>
+</dom-module>

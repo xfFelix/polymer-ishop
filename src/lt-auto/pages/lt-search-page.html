@@ -1,0 +1,122 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html" />
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html" />
+<link rel="import" href="../../../bower_components/paper-spinner/paper-spinner.html" />
+<link rel="import" href="../elements/lt-model-card.html" />
+
+<dom-module id="lt-search-page">
+	<template>
+		<style include="lt-style">
+			:host {
+                display: block;
+                padding: 15px 25px;
+                box-sizing: border-box;
+			}
+			.header{
+				color: rgba(0,0,0,0.6);
+			}
+			.header span:last-child{
+				color :  var(--app-primary-blue);
+			}
+			.carList{
+				display: flex;
+				flex-wrap: wrap;
+			}
+			footer{
+				text-align: center;
+			}
+			@media screen and (max-width:620px){
+				:host{
+					padding: 10px;
+					font-size: 14px;
+				}
+				.carList{
+					flex-direction: column;
+				}
+			}
+		</style>
+		<div class="pageContainer">
+			<div class="header">
+				当前位置：<span>首页</span> > <span>搜索结果</span> > <span>{{searchStr}}</span>
+			</div>
+			<div class="carList">
+				<template is="dom-repeat" items="{{modelList}}">
+					<lt-model-card data="{{item}}" on-click="_getDetail"></lt-model-card>
+				</template>
+			</div>
+			<footer>
+				<paper-spinner active="{{isLoading}}" hidden="{{withoutData}}"></paper-spinner>
+				<div hidden="{{!withoutData}}">
+					没有数据!
+				</div>
+			</footer>
+		</div>
+		<!-- search -->
+		<iron-ajax
+		    id="searchReq"
+		    method="POST"
+		    loading="{{isLoading}}"
+		    url="{{_calURL('shop/getVehicleModelOnSalesSearch')}}"
+		    Content-Type="application/json"
+		    handle-as="json"
+		    on-response="_responSearch">
+		</iron-ajax>
+	</template>
+	<script>
+		class ltSearchPage extends ltMixin(Polymer.Element){
+			static get is(){return 'lt-search-page'}
+			static get properties(){
+				return{
+					page : {
+						type : String,
+					},
+					searchStr : {
+						type : String,
+					}
+				}
+			}
+			static get observers(){
+				return [
+					"_checkSearch(page,searchStr)"
+				]
+			}
+			//跳转到车辆详情
+			_getDetail (e){
+				// console.log(e);
+				var uid = e.model.__data.item.uid;
+				location.hash = "#/car-detail/" + uid;
+			}
+			// 搜索结果
+			_responSearch(e){
+				this.modelList = e.detail.response.vehicleStockSingleViewList || [];
+				if(this.modelList.length == 0){
+					this.withoutData = true;
+				}else{
+					this.withoutData = false;
+				}
+			}
+			constructor(){
+				super();
+			}
+			_checkSearch(page , str){
+				if(str && page == "search"){
+					this.$.searchReq.body = {
+                        "locale":"zh_CN",
+                        "searchText":str,
+                        "sortOrder":"ASC"
+                      }
+                    this.$.searchReq.generateRequest();
+				}else{
+
+				}
+			}
+			show(){
+            	this.style.display= 'block';
+            }
+            hide(){
+            	this.dispatchEvent(new CustomEvent('hide',{}),false);
+            	this.style.display= 'none';
+            }
+		}
+		customElements.define(ltSearchPage.is,ltSearchPage)
+	</script>
+</dom-module>

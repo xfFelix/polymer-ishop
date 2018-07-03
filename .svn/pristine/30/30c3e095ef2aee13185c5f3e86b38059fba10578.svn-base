@@ -1,0 +1,52 @@
+.refund_container {
+  width: 100%;
+  height: auto;
+  background-color: #ffffff;
+  border: 0.0625rem solid #DDDDDD;
+  display: flex;
+  flex-flow: column; }
+  .refund_container .container_title {
+    font-family: PingFangTC-Semibold;
+    text-align: center;
+    font-size: 1.125rem;
+    color: #474747;
+    letter-spacing: 0; }
+  .refund_container .container_content {
+    margin: auto;
+    margin-left: 6.25rem; }
+    .refund_container .container_content .content_first p {
+      padding-left: 1.875rem;
+      font-family: PingFangTC-Light;
+      font-size: 0.75rem;
+      color: #9B9B9B;
+      letter-spacing: 0; }
+    .refund_container .container_content .content_first p.first_title {
+      font-family: PingFangTC-Regular;
+      font-size: 1rem;
+      color: #474747;
+      letter-spacing: 0; }
+      .refund_container .container_content .content_first p.first_title .circle {
+        border: 0.0625rem solid #979797;
+        background: #FFFFFF;
+        height: 21px;
+        width: 21px;
+        border-radius: 50%;
+        position: absolute;
+        left: 3.75rem; }
+    .refund_container .container_content .content_first p.red {
+      color: #EC3437; }
+      .refund_container .container_content .content_first p.red .circle {
+        border-color: #ec3437;
+        background-color: #ec3437; }
+  .refund_container .container_end {
+    margin: auto;
+    margin-top: 0.625rem;
+    margin-bottom: 0.625rem; }
+    .refund_container .container_end .end_back {
+      text-align: center;
+      line-height: 2.5rem;
+      background: #F5F5F5;
+      width: 9.0625rem;
+      height: 2.5rem; }
+
+/*# sourceMappingURL=refund-schedule.css.map */

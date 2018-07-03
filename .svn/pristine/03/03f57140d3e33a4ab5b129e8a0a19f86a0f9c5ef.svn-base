@@ -1,0 +1,50 @@
+{
+    "entrypoint": "index.html",
+    "shell": "src/lt-auto/lt-app.html",
+    "fragments": [
+      "src/lt-auto/pages/lt-car-page.html",
+      "src/lt-auto/pages/lt-home-page.html",
+      "src/lt-auto/pages/lt-product-page.html",
+      "src/lt-auto/pages/lt-car-detail-page.html",
+      "src/lt-auto/pages/lt-new-car-detail-page.html",
+      "src/lt-auto/pages/lt-model-page.html",
+      "src/lt-auto/pages/lt-popular-page.html",
+      "src/lt-auto/pages/lt-cart-page.html",
+      "src/lt-auto/pages/lt-compare-page.html",
+      "src/lt-auto/pages/lt-order-page.html",
+      "src/lt-auto/pages/lt-product-detail-page.html",
+      "src/lt-auto/pages/lt-profile-page.html",
+      "src/lt-auto/pages/lt-search-page.html",
+      "src/lt-auto/pages/lt-series-page.html",
+      "src/lt-auto/pages/lt-choose-shop-page.html",
+      "src/lt-auto/pages/lt-order-detail-page.html",
+      "src/lt-auto/pages/lt-purchase-page.html"
+  ],
+    "sources": [
+   "src/**/*",
+   "images/**/*",
+   "bower.json",
+   "data/*"
+  ],
+    "extraDependencies": [
+    "manifest.json",
+    "bower_components/webcomponentsjs/**/*"
+  ],
+    "lint": {
+        "rules": ["polymer-2"]
+    },
+    "builds": [
+        {
+            "name": "bundled",
+            "insertPrefetchLinks": true,
+            "bundle": {
+                "stripComments": true,
+                "inlineCss": false,
+                "sourcemaps": true
+              },
+            "html":{"minify":true},
+            "css":{"minify":true},
+            "js": {"compile": true,"minify": true}
+    }
+  ]
+}

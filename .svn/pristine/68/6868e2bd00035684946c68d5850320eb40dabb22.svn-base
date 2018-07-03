@@ -1,0 +1,220 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<dom-module id="lt-footer">
+	<template>
+		<style include="lt-style">
+			:host{
+				width:100%;
+				display: block;
+				color: rgba(255,255,255,0.8);
+				font-size: 12px;
+				background-color: #373D46;
+			}
+			.lightColor{
+				color: #F9A619;
+				font-size: 20px;
+				margin-top:5px;
+			}
+			.footer{
+				width:100%;
+				background-color: #373D46;
+			}
+			.container{
+				display: flex;
+				max-width:1080px;
+				margin:0 auto;
+				padding: 20px;
+
+			}
+			.col3{
+				width:33%;
+			}
+			.logo img{
+				width: 120px;
+			}
+			.bottom{
+				text-align: center;
+				padding:5px 0;
+				background: #29313C;
+			}
+			.bottom a{
+				color: #6582ff;
+			}
+			.ulBox{
+				margin-top: 8px;
+			}
+			.contactBox {
+				display: flex;
+			}
+			.qrCodeBox{
+				display: inline-flex;
+				width: 110px;
+				flex-direction: column;
+				float: right;
+				margin-left:5px;
+			}
+			.qrCodeBox + .qrCodeBox{
+				margin-left: 10px;
+			}
+			.qrCodeBox .iconBox{
+				background: #4E545C;
+			    display: flex;
+			    padding: 5px;
+			    margin-bottom: 5px;
+			    justify-content: flex-start;
+					align-items: center;
+			}
+			.qrCodeBox .iconBox span{
+				width: 20px;
+				height: 20px;
+				margin-right:6px;
+			}
+			.qrCodeBox .qrCode{
+				width: 100%;
+				background: #4E545C;
+				padding:  5px;
+				box-sizing: border-box;
+			}
+			.info{
+				font-size:16px;
+				margin-left:4px;
+			}
+			.phone{
+				width:40px;
+				height:40px;
+			}
+			/*mobile style*/
+			@media screen and (max-width:866px) {
+				.container{
+					justify-content: space-around;
+				}
+				.col3{
+					margin-left: 3%;
+				}
+				.logo{
+					width: 100%;
+				}
+
+				.contactBox{
+					display: block;
+				}
+				.qrCodeCol{
+					display:none;
+				}
+				.qrCodeBox + .qrCodeBox{
+					display:none;
+				}
+				.info{
+					margin-left:0px;
+				}
+
+				.phone{
+					display:none;
+				}
+
+				.lightColor{
+					font-size:16px;
+				}
+			}
+
+			@media screen and (max-width:1079px) and (min-width:621px){
+				.logo img{
+					width: 120px;
+				}
+				.container{
+					justify-content: space-around;
+				}
+				.qrCodeCol{
+					display:none;
+				}
+				.qrCodeBox + .qrCodeBox{
+					display:none;
+				}
+
+				.phone{
+					display:none;
+				}
+
+
+			}
+		</style>
+<div class="footer">
+		<div class="container">
+
+			<div class="col3">
+				<div class="logo">
+					<img src="./images/logo2.png">
+					<div class="lightColor">
+						科技，让买车更简单！
+					</div>
+				</div>
+				<ul class="ulBox">
+					<li>首页</li>
+					<li>常见问题</li>
+					<li>关于我们</li>
+					<li>工作机会</li>
+				</ul>
+			</div>
+			<div class="col3">
+				<div class="contactBox">
+					<div class="iconBox">
+						<svg class="phone" x="0px" y="0px"  viewBox="0 0 485.213 485.212" style="enable-background:new 0 0 485.213 485.212;">
+						<g>
+							<path d="M242.607,0C108.629,0,0.001,108.628,0.001,242.606c0,133.976,108.628,242.606,242.606,242.606   c133.978,0,242.604-108.631,242.604-242.606C485.212,108.628,376.585,0,242.607,0z M370.719,353.989l-19.425,19.429   c-3.468,3.463-13.623,5.624-13.949,5.624c-61.452,0.536-120.621-23.602-164.095-67.08c-43.593-43.618-67.759-102.998-67.11-164.657   c0-0.028,2.224-9.892,5.689-13.324l19.424-19.427c7.108-7.141,20.762-10.368,30.327-7.168l4.086,1.363   c9.537,3.197,19.55,13.742,22.185,23.457l9.771,35.862c2.635,9.743-0.919,23.604-8.025,30.712l-12.97,12.972   c12.734,47.142,49.723,84.138,96.873,96.903l12.965-12.975c7.141-7.141,20.997-10.692,30.719-8.061l35.857,9.806   c9.717,2.67,20.26,12.62,23.456,22.154l1.363,4.145C381.028,333.262,377.826,346.913,370.719,353.989z" fill="#F5A623"/>
+						</g>
+						</svg>
+					</div>
+					<div class="info">
+						全国销售服务热线
+						<div class="lightColor">400-856-5282</div>
+					</div>
+				</div>
+				<ul class="ulBox">
+					<li>旗舰店：深圳市南山区软件产业基地5栋C座一层</li>
+					<li>电邮 : info@linkedauto.cn  </li>
+					<li>传真 : +86 755 2263 2319</li>
+				</ul>
+			</div>
+			<div class="col3 qrCodeCol">
+				<div class="qrCodeBox">
+					<div class="iconBox">
+						<span><img src="./images/icon_wechat.png"></span>
+						官方微信
+					</div>
+					<div class="qrCode">
+						<img src="./images/wechat.png" width="100" height="100">
+					</div>
+				</div>
+				<div class="qrCodeBox">
+					<div class="iconBox">
+						<span><img src="./images/icon_app.png"></span>
+						手机版下载
+					</div>
+					<div class="qrCode">
+						<img src="./images/smart.png" width="100" height="100">
+					</div>
+				</div>
+			</div>
+		</div></div>
+		<div class="bottom">
+			@2015-2017 臻汇科技（深圳）有限公司® 版权所有 <a target="_blank" href="http://www.miitbeian.gov.cn/">粤ICP备16093090号-3</a>
+		</div>
+	</template>
+	<script>
+		/**
+		 * @customElement
+		 * @polymer
+		 */
+		 class ltFooter extends Polymer.Element{
+		 	static get is(){
+		 		return 'lt-footer';
+		 	}
+		 	static get properties(){
+		 		return {
+		 		}
+		 	}
+
+
+		 }
+		 customElements.define(ltFooter.is, ltFooter);
+	</script>
+</dom-module>

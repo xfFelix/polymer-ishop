@@ -1,0 +1,377 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html" />
+<link rel="import" href="../elements/lt-num-count.html" />
+<link rel="import" href="../elements/lt-purchase-element.html" />
+<dom-module id="lt-product-detail-page">
+	<template>
+		<style include="lt-style">
+			:host {
+				width: 100%;
+				/*height: 100%;*/
+				min-height: 500px;
+				display: block;
+				padding: 15px 20px;
+				box-sizing: border-box;
+				background-color: #fff;
+			}
+
+			lt-num-count{
+				padding:0px 10px;
+			}
+			.addCart{
+				color:var(--app-primary-orange);
+				background: #fff;
+				border:1px solid var(--app-primary-orange);
+			}
+			.pageContainer{
+				display: flex;
+				justify-content: space-between;
+				font-size: 16px;
+			}
+			.imgBox , .detail{
+				width: 48%;
+				height:30%;
+			}
+			.imgBox {
+				padding:1% ;
+				margin-top:25px;
+				border:1px solid #ddd;
+			}
+			l2t-paper-slider{
+			 --paper-slide-height:auto;
+			}
+			paper-slide {
+				overflow-y: hidden;
+			}
+			.imgBox img{
+				width: 100%;
+				height: auto;
+			}
+			.type,.num,.dec,.action{
+				margin: 30px 0;
+				color:#666666;
+			}
+			.detail .type .typeItem{
+				background: #d8d8d8;
+				color: #fff;
+				padding: 7px;
+				margin-right: 1%;
+			}
+			.detail .type .typeItem.iron-selected{
+				background:#D0021B;
+			}
+			.detail{
+				padding:0 30px;
+
+			}
+			.price{
+      	font-size:40px;
+				white-space: nowrap;
+      	color: red;
+      }
+			.price::before{
+				content: "￥";
+				font-size: 20px;
+				color:#4A4A4A;
+      }
+			.action{
+				display: flex;
+				justify-content: space-between;
+			}
+			.buttons span{
+				display: inline-flex;
+				padding: 8px;
+				border-radius: 4px;
+			}
+			.collection{
+				border: 2px solid #F5A623;
+				color: #F5A623;
+			}
+
+			.shopping{
+				background: var(--app-primary-red);
+				border: 2px solid var(--app-primary-red);
+				border-radius: 2px;
+				color: #fff;
+			}
+      .buttons img{
+				width: 20px;
+				height: 20px;
+      }
+	    @media screen and (max-width:620px){
+		    :host{
+		    padding: 10px;
+		    }
+	   .pageContainer{
+		    flex-direction: column;
+		    }
+	   .imgBox , .detail{
+		    width: 98%;
+				padding:1%;
+		    }
+				.price{
+					font-size:30px;
+				}
+				.buttons img{
+					display: none;
+				}
+
+				.imgBox {
+					margin-top:0;
+				}
+        }
+		@media screen and (max-width:900px) and (min-width:621px){
+			:host{
+			padding: 10px;
+			}
+	 	.pageContainer{
+			flex-direction: column;
+			}
+	 	.imgBox , .detail{
+			width: 98%;
+			padding:1%;
+			}
+		.imgBox {
+				margin-top:0;
+			}
+
+		}
+
+		</style>
+		<div class="content">
+			<div class="pageContainer">
+				<div class="imgBox">
+					<l2t-paper-slider auto-progress slide-duration="2" total-slides="[[data.productImgUrl.length]]" position="{{sliderNum}}">
+					    <template is="dom-repeat" items="{{data.productImgUrl}}">
+					        <paper-slide><img src="{{item}}"></paper-slide>
+					    </template>
+					</l2t-paper-slider>
+					<!-- <img src="../../../images/default.png"> -->
+				</div>
+				<div class="detail">
+					<h2 class="title">{{data.productName}}</h2>
+					<div class="type">
+						<span>选择种类:</span>
+						<iron-selector selected="{{selectType}}" fallback-selection="0">
+							<template is="dom-repeat" items="{{data.colorBeanList}}">
+								<span class="typeItem">{{item.colorName}}</span>
+							</template>
+						</iron-selector>
+					</div>
+					<div class="num">
+						<span>数量:</span>
+						<lt-num-count total="{{stock}}" num="{{selectedNum}}"></lt-num-count>
+						<span>库存{{stock}}件</span>
+					</div>
+					<div class="dec" id="dec">
+						<!-- {{StringUtils(data.productDescription)}} -->
+					</div>
+					<div class="action">
+						<div class="price">
+							{{data.stringTypePrice}}
+						</div>
+						<div class="buttons">
+							<!-- <span class="collection"><img src="./images/menu_icon/menu_icon_collection.png">加入收藏</span> -->
+							<span class="addCart" on-click="_addCart"><img class="btn_icon" src="./images/add.svg">加入购物车</span>
+							<span class="shopping" on-click="_purchase"><img class="btn_icon" src="./images/shopping-cart.svg">立即抢购</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<lt-pop opened="{{isOpened}}">
+			<lt-purchase-element id="purchaseEle" wechat-code="{{wechatCode}}" on-cancel="_cancel" ali-code="{{aliCode}}" status-id="{{transactionId}}" on-success="_paySuccess"></lt-purchase-element>
+		</lt-pop>
+		<!-- 获取商品详情 -->
+		<iron-ajax
+		    id="getProductDetail"
+		    method="POST"
+		    url="{{_calUserUrl('product/findProductDetailsByUid')}}"
+		    Content-Type="application/json"
+		    handle-as="json"
+		    on-response="_responseProduct">
+		</iron-ajax>
+		<!-- 添加到购物车 -->
+		<iron-ajax
+		    id="saveCart"
+		    method="POST"
+		    headers='{{header}}'
+		    url="{{_calUserUrl('order/shopping/saveCart')}}"
+		    Content-Type="application/json"
+		    handle-as="json"
+		    on-response="_responseSaveCart">
+		</iron-ajax>
+		<!-- 生成订单 -->
+		<iron-ajax
+		    id="createOrder"
+		    method="POST"
+		    headers='{{header}}'
+		    url="{{_calUserUrl('order/shopping/createOrder')}}"
+		    Content-Type="application/json"
+		    handle-as="json"
+		    on-response="_responsOrder">
+		</iron-ajax>
+		<!-- 请求支付qrcode -->
+		<iron-ajax
+		    id="getQrcode"
+		    method="POST"
+		    url="{{_calPayUrl('shop/qrCodePay')}}"
+		    Content-Type="application/json"
+		    handle-as="json"
+		    on-response="_responQrcode">
+		</iron-ajax>
+	</template>
+	<script>
+		class ltProductDetailPage extends ltMixin(Polymer.Element){
+			static get is(){return "lt-product-detail-page"}
+			static get properties(){
+				return {
+					productId : {
+						type : String,
+					},
+					page : {
+						type : String,
+					},
+					data : Object,
+					selectType : {
+						type : String,
+						observer : "_checkStock"
+					}
+				}
+			}
+			static get observers() {
+			    return [
+			        "_checkId(productId,page)"
+			    ]
+			}
+			// 加入购物车
+			_addCart(){
+				// 判读是否有登陆;
+				if(header['X-CustomToken']){
+					if(this.selectedNum > 0){
+						this.$.saveCart.body = {
+						    "data" : {
+						        "type" : this.data.colorBeanList[this.selectType].colorName,
+							    "productCode" : this.data.productCode,
+						    	"num" : this.selectedNum
+						    },
+						    "userName" : header['X-USERNAME']
+						}
+						this.$.saveCart.generateRequest();
+					}else{
+						this.dispatchEvent(new CustomEvent('confirm', {detail:{msg:"购买数量不能为0"} ,bubbles: true, composed: true}));
+					}
+				}else{
+				    this.dispatchEvent(new CustomEvent('login', {}));
+				}
+			}
+			// 购物车响应
+			_responseSaveCart(e){
+				if(e.detail.response.status == 1){
+					this.dispatchEvent(new CustomEvent('confirm', {detail:{msg:"添加成功！"} ,bubbles: true, composed: true}));
+				}
+			}
+			// 购买
+			_purchase(){
+				// 判读是否有登陆;
+				if(header['X-CustomToken']){
+					if(this.selectedNum > 0){
+						this.$.createOrder.body = {
+							datas : [{
+						      "type" : this.data.colorBeanList[this.selectType].colorName,
+						      "productCode" : this.data.productCode,
+						      "num" : this.selectedNum
+							}]
+						}
+						this.$.createOrder.generateRequest();
+					}else{
+						this.dispatchEvent(new CustomEvent('confirm', {detail:{msg:"购买数量不能为0"} ,bubbles: true, composed: true}));
+					}
+					this.isOpened = true
+				}else{
+				    this.dispatchEvent(new CustomEvent('login', {}));
+				}
+			}
+			// 生成订单
+			_responsOrder(e){
+				var respon = e.detail.response;
+				this.transactionId = respon.transactionId;
+			    // create qr code;
+			    this.$.getQrcode.body = {
+			    	outTradeNumber:respon.transactionId,
+			    	body:respon.attach
+			    }
+			    this.$.getQrcode.generateRequest();
+			}
+			// qr code
+			_responQrcode(e){
+				var arr = e.detail.response;
+				for(var i = 0 ; i < arr.length ; i ++){
+					if(arr[i].platform == "WeChatPay"){
+						this.wechatCode = arr[i].qrCodeByte;
+					}
+					if(arr[i].platform == "AliPay"){
+						this.aliCode = arr[i].qrCodeByte;
+					}
+				}
+				this.isOpened = true;
+			}
+			_cancel(){
+				this.isOpened = false;
+			}
+			// 支付成功,刷新购物车
+			_paySuccess(e){
+				// this.$.getCart.generateRequest();
+			}
+			// 获取详情
+			_checkId(id,page){
+				if(id && page == "product-detail"){
+				    this.$.getProductDetail.body = {
+				        data : {
+				        	uid : id
+				        }
+				    }
+				    this.$.getProductDetail.generateRequest();
+				}
+			}
+			_responseProduct(e){
+				this.data = e.detail.response.datas[0];
+				let dec = this.StringUtils(this.data.productDescription)
+				this.$.dec.innerHTML = dec
+				// 轮播图
+				// var arr = [];
+				// if(this.data.img1Url){
+				// 	arr.push(this.data.img1Url);
+				// }
+				// if(this.data.img2Url){
+				// 	arr.push(this.data.img2Url);
+				// }
+				// if(this.data.img3Url){
+				// 	arr.push(this.data.img3Url);
+				// }
+				// if(this.data.img4Url){
+				// 	arr.push(this.data.img4Url);
+				// }
+				// if(this.data.img5Url){
+				// 	arr.push(this.data.img5Url);
+				// }
+				// this.imgArr = arr;
+			}
+			// 库存
+			_checkStock (val){
+				this.stock = this.data.colorBeanList[val].stock;
+				if(this.stock == 0){
+					this.selectedNum = 0;
+				}
+			}
+			show(){
+             	this.style.display= 'block';
+            }
+            hide(){
+             	this.dispatchEvent(new CustomEvent('hide',{}),false);
+				this.style.display= 'none';
+            }
+
+		}
+		customElements.define(ltProductDetailPage.is,ltProductDetailPage)
+	</script>
+</dom-module>

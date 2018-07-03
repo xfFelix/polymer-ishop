@@ -1,0 +1,89 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html" />
+<dom-module id="lt-num-count">
+	<template>
+		<style>
+			:host{
+				display: inline-block;
+			}
+			.container{
+				width: auto;
+				border-top: 2px solid #D8d8d8;
+				border-bottom: 2px solid #D8d8d8;
+				line-height: 30px;
+			}
+			.reduce , .add{
+				display: inline-block;
+				width: 30px;
+				height: 32px;
+				border-left: 2px solid #D8d8d8;
+				border-right: 2px solid #D8d8d8;
+				text-align: center;
+				line-height: 30px;
+				color: #776a6a;
+    			font-size: 20px;
+			}
+			.reduce:hover , .add:hover{
+				color: #dcdcdc;
+			}
+			.num{
+				display: inline-block;
+				min-width: 45px;
+				text-align: center;
+			}
+			@media screen and (max-width:620px){
+				.container{
+					line-height: 20px;
+					font-size: 20px;
+				}
+				.reduce , .add{
+					width: 20px;
+					height: 20px;
+					line-height: 20px;
+				}
+				.num{
+					min-width: 20px;
+					font-size: 16px;
+				}
+			}
+		</style>
+		<div class="container">
+			<span class="reduce" on-click="_reduce">-</span>
+			<span class="num">{{num}}</span>
+			<span class="add" on-click="_add">+</span>
+		</div>
+
+	</template>
+	<script>
+		class ltNumCount extends Polymer.Element{
+			static get is() { return 'lt-num-count' }
+			static get properties() {
+               return {
+               		total : {
+               			type : String,
+               		},
+               		num:{
+               			type : Number,
+               			value : 1,
+               			notify : true
+               		}
+               }
+          	}
+          	_reduce(){
+          		if(this.num > 1){
+          			--this.num;
+          		}
+          	}
+          	_add(){
+          		if(this.total){
+          			if(this.total > this.num){
+          				++this.num;
+          			}
+          		}else{
+          			++this.num;
+          		}
+          	}
+
+		}
+		customElements.define(ltNumCount.is, ltNumCount);
+	</script>
+</dom-module>

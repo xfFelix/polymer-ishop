@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <!-- <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"> -->
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width, minimum-scale=0.5, maximum-scale=2.0">
+    <title>领骏达</title>
+    <meta name="description" content="lt-auto description">
+    <meta name="format-detection" content="telephone=yes"/>
+    <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="./images/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./images/favicon-16x16.png">
+    <!-- See https://goo.gl/OOhYW5 -->
+    <!-- <link rel="manifest" href="/manifest.json"> -->
+    <!-- <script>
+      // Force all polyfills on
+      if (window.customElements) window.customElements.forcePolyfill = true;
+      ShadyDOM = { force: true };
+      ShadyCSS = { shimcssproperties: true};
+    </script> -->
+    <script src="/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+
+    <script>
+      // 申明变量
+      var searchType = {};//搜索类型;
+      var isLogin; // 是否有登陆;
+      var header = {
+        'X-CustomToken': '',
+        'X-USERNAME': ''
+      }
+      // const baseUrl = './iCaniShop/';
+      // const userUrl = '';
+      // const payUrl = '';
+      const baseUrl = 'http://test.travellerdata.com/iCaniShop/';
+      const userUrl = 'https://test.travellerdata.com/iCanUser/';
+      const payUrl = 'https://test.travellerdata.com/iCanPayment/';
+    </script>
+    <script>
+      /**
+       * [isWeChat 判断是否为PC版微信浏览器]
+       * @return {Boolean} [description]
+       */
+      function isWeChat() {
+        let userAgent = navigator.userAgent.toLowerCase().toString(); //获取userAgent
+        if (userAgent.indexOf("windowswechat") + 1 >0) {
+          alert('请在设置中选择用系统默认浏览器打开')
+        }
+      }
+      isWeChat();
+
+      window.addEventListener('WebComponentsReady', function() {
+        // At this point we are guaranteed that all required polyfills have loaded,
+        // all HTML imports have loaded, and all defined custom elements have upgraded
+        var link = document.createElement('link');
+        link.async = true;
+        link.rel = 'import';
+        link.href = "/src/lt-auto/lt-app.html"
+        document.head.appendChild(link);
+      });
+    </script>
+    <!-- 微信sdk -->
+    <!-- <script src="/javascripts/application.js" type="text/javascript" charset="utf-8"></script> -->
+    <!-- <link rel="import" href="/src/lt-auto/lt-app.html"> -->
+    <style>
+      html{
+        padding: 0;
+        margin:0;
+        background: #edebeb;
+        width: 100%;
+        height: 100%;
+      }
+      body{
+        width: 100%;
+        height: calc(100% - 50px);
+        top: 0;
+        left: 0;
+        /*position: fixed;*/
+        /*overflow: hidden;*/
+        display: block;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <lt-app></lt-app>
+  </body>
+</html>

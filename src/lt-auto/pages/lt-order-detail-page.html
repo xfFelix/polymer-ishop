@@ -1,0 +1,320 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html" />
+<dom-module id="lt-order-detail-page">
+	<template>
+		<style include="lt-style">
+			:host {
+				width: 100%;
+				min-height: 500px;
+				display: block;
+				padding: 15px 25px;
+				box-sizing: border-box;
+				background: #fff;
+				--border-style:1px solid #ddd;
+			}
+			.pageContainer{
+				min-height: 500px;
+			}
+			.header{
+				display: none;
+				color: rgba(0,0,0,0.6);
+				width: 100%;
+			}
+			.header span:last-child{
+				color : #6abaff;
+			}
+			.order_box{
+				margin-top: 20px;
+			}
+			.car_table table , .product_table table{
+				width: 100%;
+				border-collapse:collapse;
+				margin: 0 auto;
+				margin-top: 20px;
+			}
+			td .imgBox {
+				width: 25%;
+			}
+			table tr td{
+				border : 1px solid #ddd;
+				padding: 10px;
+				min-width: 120px;
+    			text-align: center;
+    			box-sizing: border-box;
+    			min-height: 110px;
+			}
+
+			table thead{
+				background: #F5F5F5;
+			}
+			table tbody{
+				background: #fff;
+			}
+			table tr td.detail_td{
+				border-top: none;
+				border-right: none;
+				display: flex;
+				align-items: center;
+			}
+			.dec{
+				font-weight: 600;
+				margin-left: 20px;
+			}
+			.brand {
+			    display: inline-block;
+			}
+			.brand::after {
+			    content: " | ";
+			}
+			.series {
+			    display: inline-block;
+			}
+			.model {
+			    display: block;
+			    color: #999999;
+			    font-weight: 300;
+			    margin-top: 8px;
+			}
+			.price{
+                font-size: 30px;
+                color: red;
+            }
+            .price::before{
+                content: "￥";
+                font-size: 14px;
+                color:#4A4A4A;
+            }
+            .price::after{
+                content: "万";
+                font-size: 14px;
+                color:#4A4A4A;
+            }
+            .product_price.price::after{
+            	content: ""
+            }
+            .footer {
+            	margin-top: 20px;
+            	text-align: right;
+            }
+            .qrCode_box{
+				width: 100%;
+				margin-top: 20px;
+				text-align: center;
+				display: flex;
+				justify-content: center;
+            }
+            .qrCode_box .container{
+            	display: flex;
+				justify-content: center;
+				/*align-items: center;*/
+            	width: 50%;
+            	border: 1px solid #ddd;
+            	padding: 20px;
+            }
+            .qrCode_box .qrCode img{
+            	width: 170px;
+            	height: 170px;
+            }
+            .info_item+.info_item{
+            	margin-top: 20px;
+            }
+            .shop_name{
+            	font-size: 20px;
+            	font-weight: 600;
+            }
+            .shop_address{
+            	font-size: 16px;
+            	font-weight: 400;
+            }
+            .tips{
+            	font-size: 12px;
+            	font-weight: 200;
+            }
+            .saveButton span{
+            	background: #EA2225;
+            	cursor: pointer;
+            	width: 145px;
+            	height: 40px;
+            	color: #fff;
+            	display: inline-block;
+            	line-height: 40px;
+            }
+            @media screen and (max-width:620px){
+            	:host{
+            		padding: 10px;
+            	}
+            	table tr td.detail_td{
+            		flex-direction: column;
+            	}
+            	td .imgBox ,td .dec{
+            		width: 100%;
+            		margin: 0;
+            	}
+            	.product_table table tr td{
+            		min-width: 64px;
+            	}
+            	.qrCode_box .container{
+            		flex-direction: column;
+            	}
+            }
+		</style>
+		<div class="pageContainer">
+			<div class="header">
+				当前位置：<span>首页</span> > <span>我的订单</span> > <span>订单详情</span> 
+			</div>
+			<div class="order_box">
+				<div class="car_table" id="car_table" hidden="{{showProduct}}">
+					<table>
+						<thead>
+							<tr>
+								<td>产品</td>
+								<td>价格</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class="detail_td">
+									<div class="imgBox" style="background: url(../../../images/default_bg.jpg);">
+										<img src$="{{orderDetail.defaultImgUrl}}" width="100%">
+									</div>
+									<div class="dec">
+										<span class="brand">{{orderDetail.vehicleBrandName}}</span>
+										<span class="series">{{orderDetail.vehicleSeriesName}}</span>
+										<span class="model">{{orderDetail.vehicleModelName}}</span>
+									</div>	
+								</td>
+								<td>
+									<div class="price">{{orderDetail.price}}</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<!-- <div class="footer">
+						<div class="inline">
+							合计： <div class="inline price">2345</div>
+						</div>
+					</div> -->
+				</div>
+				<div class="product_table" id="product_table" hidden="{{!showProduct}}">
+					<table>
+						<thead>
+							<tr>
+								<td>产品</td>
+								<td>类型</td>
+								<td>数量</td>
+								<td>价格</td>
+							</tr>
+						</thead>
+						<tbody>
+							<template is="dom-repeat" items="{{orderDetail.productDetails}}">
+								<tr>
+									<td class="detail_td">
+										<div class="imgBox">
+											<img src="{{item.defaultImgUrl}}" width="100%">
+										</div>
+										<div class="dec">
+											{{item.name}}
+										</div>	
+									</td>
+									<td>
+										{{item.type}}
+									</td>
+									<td class="num">
+										{{item.num}}
+									</td>
+									<td>
+										<div class="product_price price">
+											{{item.price}}
+										</div>
+									</td>
+								</tr>
+							</template>
+						</tbody>
+					</table>
+					<div class="footer">
+						<div class="inline">
+							合计： <div class="inline price product_price">{{orderDetail.totalAmount}}</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="qrCode_box">
+				<div class="container">
+					<div class="qrCode">
+						<img src$="{{base64Png(orderDetail.vehicleQrCode)}}">
+					</div>
+					<div class="info">
+						<div class="shop_name info_item">
+							<!-- 领骏达旗舰店 -->
+							{{orderDetail.tabSysShopName}}
+						</div>
+						<div class="shop_address info_item">
+							<!-- 深圳市南山区软件产业基地5栋C座 -->
+							{{orderDetail.tabSysShopAddress}}
+						</div>
+						<div class="tips info_item">
+							当你到达该汽车销售公司后，请让职员扫描上面的二维码，
+							以进行购车程序。 
+						</div>
+						<div class="saveButton info_item">
+							<!-- <span>保存二维码</span> -->
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+	</template>
+	<script>
+		class ltOrderDetailPage extends ltMixin(Polymer.Element){
+			static get is(){return "lt-order-detail-page"}
+			static get properties(){
+				return {
+					orderDetail : Object
+				}
+			}
+			static get observers (){
+				return [
+
+				]
+			}
+			ready() {
+				super.ready();
+				if (!this.checkApp()) {
+					this.shadowRoot.querySelector('.header').style.display = 'block';
+				}
+			}
+			show(){
+             	this.style.display= 'block';
+             	// get order detail
+             	if(header['X-CustomToken']){
+             		// get data from localStorage;
+             		var order_detail = JSON.parse(localStorage.getItem('order_detail'));
+             		if(order_detail){
+             			if(order_detail.type == "product"){
+             				this.showProduct = true;
+             				var obj = order_detail.detail;
+             				// 产品默认地址;
+             				obj.tabSysShopName = "领骏达旗舰店";
+             				obj.tabSysShopAddress = "深圳市南山区软件产业基地5栋C座";
+             				this.orderDetail = obj;
+             			}else{
+             				this.showProduct = false;
+             				this.orderDetail = order_detail.detail;
+             			}
+             		}
+             	}else{
+             		this.dispatchEvent(new CustomEvent('confirm', {detail:{msg:"请先登录!"} ,bubbles: true, composed: true}));
+             		setTimeout(function(){
+             			location.hash = "#/home"
+             		},2000)
+             	}
+            }
+            hide(){
+             	this.dispatchEvent(new CustomEvent('hide',{}));
+				this.style.display= 'none';
+            }
+
+		}
+		customElements.define(ltOrderDetailPage.is,ltOrderDetailPage)
+	</script>
+</dom-module>

@@ -1,0 +1,66 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html" />
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html" />
+
+<dom-module id="lt-refund-apply">
+	<template>
+		<link rel="stylesheet" type="text/css" href="/src/lt-auto/css/refund-apply.css">
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		<div class="refund">
+		<div class="loading" hidden="{{!loading}}">
+			<paper-spinner active="{{loading}}"></paper-spinner>
+		</div>
+		<div class="refund_container">
+			<div class="left_icon">
+				<img src="../../../images/confirm_purchased.png">
+				<p class="left_title">已付款</p>
+			</div>
+			<div class="right_content">
+				<div class="content_title">
+					<p>领骏达旗舰店</p>
+				</div>
+				<div class="content_text">
+					<p>深圳市南山区软件产业基地5栋C座</p>
+				</div>
+				<div class="content_button">
+					<div on-click="applyRefund">申请退款</div>
+				</div>
+			</div>
+		</div>
+		</div>
+		<iron-ajax
+            id="isChecked"
+            method="POST"
+            headers = "{{header}}"
+            loading = "{{loading}}"
+            url="{{_calUserUrl('order/shopping/isChecked')}}"
+            Content-Type="application/json"
+            handle-as="json"
+            on-response="_responDetail">
+        </iron-ajax>
+	</template>
+	<script>
+		class ltRefundApply extends ltMixin(Polymer.Element){
+			static get is(){return "lt-refund-apply"}
+			static get properties(){
+				return {
+					data : Object,
+				}
+			}
+			applyRefund(){
+				this.$.isChecked.body={
+					vehicleSalesUid : this.data.vehicleSalesUid
+				}
+				this.$.isChecked.generateRequest();
+			}
+			_responDetail (e) {
+				let result = e.detail.response
+				this.dispatchEvent(new CustomEvent('refund-apply', {detail:{msg:"未确认订单，可直接退款", result: result}}));
+			}
+		}
+		customElements.define(ltRefundApply.is,ltRefundApply)
+	</script>
+</dom-module>

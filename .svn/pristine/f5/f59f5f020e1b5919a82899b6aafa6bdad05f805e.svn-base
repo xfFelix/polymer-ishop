@@ -1,0 +1,113 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html" />
+   <dom-module id="lt-pop">
+       <template>
+           <style include="lt-style">
+               :host {
+                   display: none;
+               }
+               #backdrop{
+                 position: fixed;
+                 top: 0;
+                 left: 0;
+                 width: 100%;
+                 height: 100%;
+                 background: rgba(0, 0, 0, 0.5);
+                 -webkit-backdrop-filter: blur(20px);
+                 display: flex;
+                 flex-flow: row nowrap;
+                 justify-content: center;
+                 align-items: center;
+                 z-index: 2;
+               }
+               #container{
+                 max-width: 100%;
+                 min-width: 300px;
+                 border-radius: var(--app-radius);
+                 background: #fff;
+                 padding: 10px;
+                 box-sizing: border-box;
+                 box-shadow: 0 0 120px 2px rgba(0,0,0,.5);
+               }
+               #container.iphone_safari{
+                  position: absolute;
+               }
+           </style>
+           <div id="backdrop" on-click="close">
+             <div id="container" on-click="stopPop">
+               <slot>
+
+               </slot>
+             </div>
+           </div>
+       </template>
+
+       <script>
+           /**
+            * @customElement
+            * @polymer
+            */
+           class ltPop extends Polymer.Element {
+               static get is() { return 'lt-pop'; }
+               static get properties() {
+                   return {
+                     opened:{type:Boolean,reflectToAttribute:true, observer:'openClosedHandeler',notify : true}
+                   }
+               }
+               ready(){
+                super.ready();
+               }
+               stopPop(e){
+                 e.stopPropagation();
+               }
+               close(){
+                 this.opened = false;
+               }
+               openClosedHandeler(boo){
+                 if(boo){
+                   this.introAnimation()
+                 }else{
+                   this.outtroAnimation()
+                 }
+               }
+               introAnimation(){
+                 let intro = anime({
+                   targets:[this.$.backdrop, this.$.container],
+                   opacity:[0,1],
+                   scale:[1.5,1],
+                   duration:300,
+                   easing:'easeInOutCubic',
+                   begin:function(){
+                    this.style.display = 'block';
+                   }.bind(this),
+                   complete:function(){
+                    // 判读iPhone safari 浏览器
+                    var u = navigator.userAgent;
+                    if(!!u.match(/AppleWebKit.*Mobile.*/)){ //是否移动端
+                      if(/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)){ // 是否ipone
+                        // 重新布局,键盘弹出问题
+                        // var height = this.$.container.offsetHeight;
+                        this.$.container.classList.add('iphone_safari');
+                        // this.$.container.style.top = 'calc((100vh - ' + height + 'px)/2)';
+                        this.$.container.style.top = "10px";
+                      }
+                    }
+                   }.bind(this)
+                 })
+               }
+               outtroAnimation(){
+                 let intro = anime({
+                   targets:[this.$.backdrop, this.$.container],
+                   opacity:[1,0],
+                   scale:[1,1.5],
+                   duration:300,
+                   easing:'easeInOutCubic',
+                   complete:function(){
+                    this.style.display = 'none';
+                   }.bind(this)
+                 })
+               }
+           }
+
+           window.customElements.define(ltPop.is, ltPop);
+       </script>
+   </dom-module>

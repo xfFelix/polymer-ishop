@@ -1,0 +1,76 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html" />
+
+<dom-module id="lt-refund-reason">
+	<template>
+		<link rel="stylesheet" type="text/css" href="../src/lt-auto/css/refund-reason.css">
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		<div class="refund">
+		<div class="refund_container">
+			<div class="refund_title">
+				<p class="title_text">请选择退款原因</p>
+			</div>
+			<div class="refund_reason">
+				<p class="reason_item">买错了车型号。</p>
+				<p class="reason_item">资金短缺。</p>
+				<p class="reason_item">后悔了，不想要了</p>
+				<p class="reason_item">计划有变，没时间</p>
+				<p class="reason_item">其他原因</p>
+				<div class="reason_text">
+					<textarea placeholder="请输入退款原因"></textarea>
+				</div>
+			</div>
+			<div class="refund_button">
+				<div class="button_ok" on-click="allowRefund">确认退款</div>
+				<div class="button_calcel" on-click="cancelPage">取消</div>
+			</div>
+		</div>
+		</div>
+	</template>
+	<script type="text/javascript">
+    	// 适屏处理函数
+    	function winResize() {
+    		var dpr = window.devicePixelRatio;
+        	var meta = document.getElementsByTagName('meta')[1];
+    		// 获取屏幕宽度(viewport)
+    		var hhxhWindowWidth = document.documentElement.clientWidth || document.body.clientWidth;
+    		// 获取html的Dom
+        	var htmlDom = document.getElementsByTagName('html')[0];
+        	if (hhxhWindowWidth > 359 && hhxhWindowWidth < 415) {
+        		meta.setAttribute('content', 'initial-scale=' + 1/dpr + ', maximum-scale=' + 1/dpr + ', minimum-scale=' + 1/dpr + ', user-scalable=no');
+        		return
+        	}else {
+        		meta.setAttribute('content', 'initial-scale=' + 1 + ', maximum-scale=' + 1 + ', minimum-scale=' + 1 + ', user-scalable=no');
+        		return
+        	}
+      //   	// 设置html的font-size
+      //   	htmlDom.style.fontSize = hhxhWindowWidth / 10 + 'px';
+    	}
+
+    	// 初始化适屏
+    	winResize();
+
+    	// 横竖屏切换
+    	// window.addEventListener('resize', winResize);
+    </script>
+	<script>
+		class ltRefundReason extends Polymer.Element{
+			static get is(){return "lt-refund-reason"}
+			static get properties(){
+				return {
+					data : Object,
+				}
+			}
+			allowRefund () {
+				this.dispatchEvent(new CustomEvent('refund-allow', {detail:{msg:"提交退款原因成功", result: 'fail'}}));
+			}
+			cancelPage () {
+				this.dispatchEvent(new CustomEvent('refund-reason', {detail:{msg:"取消申请订单"}}));
+			}
+		}
+		customElements.define(ltRefundReason.is,ltRefundReason)
+	</script>
+</dom-module>

@@ -1,0 +1,1 @@
+import xhr from'../xhr/http';var BankCardService=function(){function a(){babelHelpers.classCallCheck(this,a)}return babelHelpers.createClass(a,[{key:'loadMineBankCardList',value:function(){return xhr.fetch('/order/shopping/isOrderFull',{type:'POST'})}}]),a}();export default new BankCardService;

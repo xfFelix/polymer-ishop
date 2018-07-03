@@ -1,0 +1,194 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html" />
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html" />
+<link rel="import" href="../lt-mixin.html" />
+<link rel="import" href="../lt-style.html" />
+<link rel="import" href="../elements/lt-car-card.html" />
+   <dom-module id="lt-car-page">
+       <template>
+           <style include="lt-style">
+               :host {
+                display: block;
+                 --card-size:300px;
+                 --row-width:1220px;
+                 --card-brand-size:13px;
+                 --card-model-size:13px;
+                 --card-series-size:18px;
+                 --card-prize-size:22px;
+                 --app-card-price-bottom:12px;
+                 --app-card-blank:calc( 100% * 1.05 );
+                 --card-title-line-height:40px;
+                 --card-content-line-height:24px;
+                 --card-back-color:#333333;
+                 --card-height:320px;
+                 --card-btn-size:24px;
+                 --card-list-size:15px;
+               }
+               :host(.tablet){
+                 --card-size:33.3%;
+                 --row-width:980px;
+                 --card-height:calc( 100% * 1 );
+
+               }
+               :host(.smalltablet){
+                 --card-size:50%;
+                 --row-width:100%;
+                 --card-height:calc( 100% * 1 );
+                --card-btn-size:36px;
+               }
+
+               :host(.mobile){
+                 --card-size:100%;
+                 --row-width:100%;
+                 --card-height:calc( 100% * 1. );
+                 --card-btn-size:36px;
+               }
+
+               lt-car-card {
+                 width: var(--card-size);
+                 min-height: 230px;
+                 --card-shadow:var(--app-card-bg);
+               }
+
+               #allRow{
+                 box-sizing: border-box;
+                 display: flex;
+                 justify-content: flex-start;
+                 flex-wrap: wrap;
+                 max-width:var(--row-width);
+                 margin: 0 auto;
+                 padding: 0 10px;
+               }
+
+           </style>
+           <div class=“pageContainer”>
+           <aside id="compare">
+             <lt-car-compare></lt-car-compare>
+           </aside>
+           <div class="row" id="recommendRow">
+
+           </div>
+           <div class="row" id="allRow">
+             <template is="dom-repeat" id="allVeh" items="[[listData]]" as="car" on-dom-change="allListUpdate">
+                <lt-car-card class$="carItem {{state}}" data="[[car]]" on-opened="opendHandeler"></lt-car-card>
+             </template>
+           </div>
+           <iron-ajax
+       			id="list"
+       			method="POST"
+       			url="{{_calURL('shop/getVehicle')}}"
+   	     		Content-Type="application/json"
+   		     	body="{{postBody}}"
+   		     	handle-as="json"
+   		     	last-response="{{listData}}"
+   		     	loading="{{allVehLoading}}">
+       		</iron-ajax>
+          </div>
+       </template>
+
+       <script>
+           /**
+            * @customElement
+            * @polymer
+            */
+           class ltCarPage extends ltMixin(Polymer.Element) {
+               static get is() { return 'lt-car-page'; }
+               static get properties() {
+                   return {
+                     allListCard:{type:Array},
+                     animateReady:{type:Boolean,value:false},
+                     openedEl:{type:Object},
+                     postBody: {
+             					type: Object,
+             					value: () => {
+             						return { }
+             					}
+             				},
+                   }
+               }
+               ready(){
+                 super.ready();
+                 // init page
+               }
+               allListUpdate(){
+                 if(!this.listData)return
+                 if(this.listData.length > 0){
+                   this.allListCard = this.shadowRoot.querySelectorAll('.carItem');
+                   if(!this.animateReady){
+                     let intor = anime({
+                       targets:this.allListCard,
+                       opacity:[0,1],
+                       translateY:[50,0],
+                       duration:300,
+                       easing:'easeInOutQuad',
+                       delay: function(target, index) {
+                        // 100ms delay multiplied by every div index, in ascending order
+                        return index * 50;
+                      }
+                     })
+                   }
+                 }
+               }
+               opendHandeler(e){
+                 if(this.openedEl){
+                   this.openedEl.opened = false;
+                   this.openedEl = e.detail.el;
+                 }else{
+                   this.openedEl = e.detail.el;
+                 }
+               }
+               show(){
+                 if(this.allListCard){
+                   let intor = anime({
+                     targets:this.allListCard,
+                     opacity:[0,1],
+                     translateY:[50,0],
+                     duration:300,
+                     easing:'easeInOutQuad',
+                     begin:function(){
+                       this.style.display= 'block';
+                     }.bind(this),
+                     delay: function(target, index) {
+                      // 100ms delay multiplied by every div index, in ascending order
+                      return index * 50;
+                    },
+                    complete:function(){
+                      this.animateReady = true;
+                    }.bind(this)
+                   })
+                 }
+                 this.style.display= 'block';
+               }
+               introAnimation(){
+
+               }
+               hide(){
+                 let crossfade = false
+                 if(this.allListCard){
+                   let outtro = anime({
+                     targets:this.allListCard,
+                     opacity:[1,0],
+                     translateY:[0,-50],
+                     duration:300,
+                     easing:'easeInOutQuad',
+                     delay: function(target, index) {
+                      // 100ms delay multiplied by every div index, in ascending order
+                      return index * 50;
+                    },
+                    update:function(anim){
+                      if(crossfade)return
+                      if(anim.progress > 40){
+                        this.animateReady = false;
+                        this.dispatchEvent(new CustomEvent('hide',{}),false);
+                        this.style.display= 'none';
+                        crossfade = true
+                      }
+                    }.bind(this)
+                   })
+                 }
+
+               }
+           }
+
+           window.customElements.define(ltCarPage.is, ltCarPage);
+       </script>
+   </dom-module>

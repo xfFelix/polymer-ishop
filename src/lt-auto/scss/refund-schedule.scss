@@ -1,0 +1,66 @@
+@function px2rem($px) {
+	$rem:16px;
+	@return ($px / $rem) + rem;
+}
+		.refund_container{
+    		width: 100%;
+            height: auto;
+            background-color: #ffffff;
+    		border: px2rem(1px) solid #DDDDDD;
+    		display: flex;
+    		flex-flow: column;
+    		.container_title {
+    			font-family: PingFangTC-Semibold;
+    			text-align: center;
+				font-size: px2rem(18px);
+				color: #474747;
+				letter-spacing: 0;
+    		}
+    		.container_content{
+    			margin: auto;
+    			margin-left: px2rem(100px);
+    			.content_first{
+    				p{
+    					padding-left: px2rem(30px);
+    					font-family: PingFangTC-Light;
+						font-size: px2rem(12px);
+						color: #9B9B9B;
+						letter-spacing: 0;
+    				}
+    				p.first_title{
+    					font-family: PingFangTC-Regular;
+						font-size: px2rem(16px);
+						color: #474747;
+						letter-spacing: 0;
+						.circle{
+							border: px2rem(1px) solid #979797;
+							background: #FFFFFF;
+							height: 21px;
+							width: 21px;
+							border-radius: 50%;
+							position: absolute;
+							left: px2rem(60px);
+						}
+    				}
+    				p.red {
+						color: #EC3437;
+						.circle{
+							border-color: #ec3437;
+							background-color: #ec3437;
+						}
+					}
+    			}
+    		}
+    		.container_end{
+    			margin: auto;
+    			margin-top: px2rem(10px);
+    			margin-bottom: px2rem(10px);
+    			.end_back{
+    				text-align: center;
+    				line-height: px2rem(40px);
+    				background: #F5F5F5;
+    				width: px2rem(145px);
+    				height: px2rem(40px);
+    			}
+    		}
+    	}

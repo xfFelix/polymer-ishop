@@ -1,0 +1,77 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html" />
+<dom-module id="lt-search-type">
+	<template>
+		<style>
+			:host{
+				display: block;
+			}
+			.container{
+				/*width:360px;*/
+			}
+			.container .header{
+				font-size: 15px;
+				margin-top:8px;
+				color: #4A4444;
+				letter-spacing: 0;
+			}
+			.container .content{
+				padding:2% 0 ;
+				display: flex;
+				justify-content: flex-start;
+				flex-wrap: wrap;
+			}
+			.container .content ::slotted(span){
+				background: #F5F5F5;
+			    border: 1px solid #DDDDDD;
+			    border-radius: 2px;
+			    min-width: 30.5%;
+			    height: 25px;
+			    text-align: center;
+			    font-size: 13px;
+			    line-height: 25px;
+			    margin:5px 1.1%;
+			    color:#888;
+			}
+			.container .content ::slotted(span:hover){
+				color: #fff;
+				background: var(--app-primary-blue);
+				border:1px solid var(--app-primary-blue);
+			}
+			.container .content ::slotted(span.iron-selected){
+				color: #fff;
+				background: var(--app-primary-blue);
+				border:1px solid var(--app-primary-blue);
+			}
+			@media screen and (max-width:620px) {
+				.container .content ::slotted(span){
+					/*margin-right: 10px;*/
+				}
+			}
+		</style>
+		<div class="container">
+			<div class="header">
+				<slot name="title"></slot>
+			</div>
+			<iron-selector selected="{{selected}}" attr-for-selected="{{attrForSelected}}" class="content">
+				<slot></slot>
+			</iron-selector>
+		</div>
+
+	</template>
+	<script>
+		class ltSearchType extends Polymer.Element{
+			static get is() { return 'lt-search-type' }
+			static get properties() {
+               return {
+               		selected : {
+               			type : String,
+               			notify : true
+               		},
+               		attrForSelected : String
+               }
+          	}
+
+		}
+		customElements.define(ltSearchType.is, ltSearchType);
+	</script>
+</dom-module>

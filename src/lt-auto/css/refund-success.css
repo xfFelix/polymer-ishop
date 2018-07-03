@@ -1,0 +1,212 @@
+html, body {
+  margin: 0;
+  padding: 0; }
+
+.refund_container {
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff;
+  border: 0.0625rem solid #DDDDDD;
+  display: flex;
+  flex-flow: row; }
+
+.left_icon {
+  display: flex;
+  width: 14.375rem;
+  height: 14.9375rem; }
+
+.left_icon img {
+  margin: auto;
+  width: 5.9375rem;
+  height: 5.9375rem; }
+
+.left_title {
+  margin-left: 3.8125rem;
+  margin-bottom: 3.375rem;
+  width: 5.875rem;
+  height: 1.75rem;
+  word-break: keep-all;
+  font-family: PingFangTC-Light sans-serif;
+  font-size: 1.25rem;
+  color: #474747;
+  text-align: center;
+  letter-spacing: 0; }
+
+.right_content {
+  width: 23.125rem;
+  height: auto; }
+
+.right_content .content_title {
+  width: 15.8125rem;
+  height: 1.5625rem; }
+
+.right_content .content_title p {
+  font-size: 1.125rem;
+  font-family: PingFangTC-Semibold sans-serif;
+  color: #474747;
+  letter-spacing: 0; }
+
+.right_content .content_text {
+  min-height: 1.25rem;
+  max-height: 6.875rem;
+  overflow: hidden;
+  text-overflow: ellipsis; }
+
+.right_content .content_text p {
+  font-family: PingFangTC-Light sans-serif;
+  font-size: 0.875rem;
+  color: #F9A619;
+  letter-spacing: 0; }
+
+.right_content .content_text .text_shoper {
+  font-family: PingFangTC-Light;
+  font-size: 0.75rem;
+  color: #9B9B9B;
+  letter-spacing: 0; }
+
+.right_content .content_button {
+  width: 9.0625rem;
+  height: 2.5rem;
+  background-color: #ecdfde;
+  position: absolute;
+  bottom: 1.25rem;
+  display: flex;
+  justify-content: center;
+  align-items: center; }
+
+.right_content .content_button div {
+  margin: auto;
+  width: 6.4875rem;
+  height: 1.375rem;
+  font-family: PingFangTC-Medium sans-serif;
+  font-size: 1rem;
+  color: #9B9B9B;
+  letter-spacing: 0;
+  line-height: 1.375rem;
+  word-break: keep-all;
+  text-align: center; }
+
+.container_car, .container_header, .container_price {
+  display: none; }
+
+@media screen and (min-width: 360px) and (max-width: 414px) {
+  .refund .refund_container {
+    flex-direction: column; }
+    .refund .refund_container .container_header {
+      display: flex;
+      flex-direction: row;
+      order: 1;
+      background: #D30026;
+      box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.12), 0 4px 4px 0 rgba(0, 0, 0, 0.24);
+      height: 55px; }
+      .refund .refund_container .container_header .header_icon {
+        position: absolute;
+        width: 19px;
+        height: 22px;
+        top: 17px;
+        left: 22px; }
+      .refund .refund_container .container_header .header_title {
+        margin: auto;
+        font-family: PingFangTC-Medium;
+        font-size: 20px;
+        color: #FFFFFF; }
+    .refund .refund_container .container_car {
+      display: block;
+      order: 2;
+      height: 130px;
+      border-bottom: 1px solid #d7c6c6;
+      display: flex;
+      flex-flow: row; }
+      .refund .refund_container .container_car .car_left {
+        flex: 2;
+        display: flex; }
+        .refund .refund_container .container_car .car_left .left_icon {
+          background: #EEEEEE;
+          margin: auto;
+          width: 108px;
+          height: 91px; }
+      .refund .refund_container .container_car .car_right {
+        flex: 3;
+        display: flex;
+        flex-flow: column;
+        align-items: flex-start;
+        justify-content: center; }
+        .refund .refund_container .container_car .car_right .right_title {
+          font-family: PingFangTC-Medium;
+          font-weight: bold;
+          font-size: 15px;
+          color: #4A4444;
+          letter-spacing: 0;
+          margin-bottom: 10px; }
+        .refund .refund_container .container_car .car_right .right_txt {
+          font-family: PingFangTC-Light;
+          font-size: 14px;
+          color: #4A4A4A;
+          letter-spacing: 0; }
+    .refund .refund_container .container_price {
+      order: 3;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 10px; }
+      .refund .refund_container .container_price .price_text {
+        font-family: PingFangTC-Light;
+        font-weight: bold;
+        font-size: 18px;
+        color: #474747;
+        letter-spacing: 0;
+        text-align: center; }
+        .refund .refund_container .container_price .price_text strong {
+          color: #ee9d09c4;
+          font-size: 18px;
+          font-weight: bold; }
+    .refund .refund_container .left_icon {
+      order: 4;
+      width: 100%;
+      height: auto;
+      justify-content: center;
+      align-content: center;
+      margin: 50px auto; }
+      .refund .refund_container .left_icon img {
+        margin: auto;
+        width: 160px;
+        height: 130px; }
+      .refund .refund_container .left_icon .left_title {
+        margin: auto; }
+    .refund .refund_container .right_content {
+      order: 5;
+      width: auto;
+      height: auto;
+      margin-top: 60px;
+      margin-bottom: 50px; }
+      .refund .refund_container .right_content .content_title, .refund .refund_container .right_content .content_text {
+        display: none; }
+      .refund .refund_container .right_content .content_button {
+        display: block;
+        margin: auto;
+        position: static;
+        width: auto;
+        height: auto;
+        background-color: #FFFFFF; }
+        .refund .refund_container .right_content .content_button div {
+          margin: auto;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+          background: #EEEEEE;
+          border-radius: 4px;
+          width: 194px;
+          height: 50px; } }
+
+@media screen and (min-width: 360px) and (max-width: 374px) {
+  .refund .refund_container .container_price {
+    margin-top: 0px; } }
+
+@media screen and (min-height: 812px) and (min-width: 375px) {
+  .refund .refund_container .right_content .content_button div {
+    margin-bottom: 142px; } }
+
+@media screen and (min-height: 736px) and (min-width: 414px) {
+  .refund .refund_container .right_content .content_button div {
+    margin-bottom: 80px; } }

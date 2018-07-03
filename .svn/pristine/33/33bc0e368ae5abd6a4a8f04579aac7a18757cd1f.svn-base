@@ -1,0 +1,73 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html" />
+
+<dom-module id="lt-refund-new-success">
+	<template>
+		<link rel="stylesheet" type="text/css" href="/src/lt-auto/css/refund-new-success.css">
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		<div class="refund">
+		<div class="refund_container">
+			<div class="left_icon">
+				<img src="../../../images/pass.jpg">
+			</div>
+			<div class="right_content">
+				<div class="content_title">
+					<p>你好！</p>
+				</div>
+				<div class="content_text">
+					<p class="text_result">您的退款申请已经通过</p>
+					<p class="text_shoper">商户：领骏达（已确认）</p>
+					<div class="text_long">你好，本店将会在24小时内退款。</div>
+				</div>
+				<div class="content_button">
+					<div class="button_ok" on-click="cancelPage">了解</div>
+					<div class="button_link">联系领骏达官方</div>
+				</div>
+			</div>
+		</div>
+		</div>
+	</template>
+	<script type="text/javascript">
+    	// 适屏处理函数
+    	function winResize() {
+    		var dpr = window.devicePixelRatio;
+        	var meta = document.getElementsByTagName('meta')[1];
+    		// 获取屏幕宽度(viewport)
+    		var hhxhWindowWidth = document.documentElement.clientWidth || document.body.clientWidth;
+    		// 获取html的Dom
+        	var htmlDom = document.getElementsByTagName('html')[0];
+        	if (hhxhWindowWidth > 359 && hhxhWindowWidth < 415) {
+        		meta.setAttribute('content', 'initial-scale=' + 1/dpr + ', maximum-scale=' + 1/dpr + ', minimum-scale=' + 1/dpr + ', user-scalable=no');
+        		return
+        	}else {
+        		meta.setAttribute('content', 'initial-scale=' + 1 + ', maximum-scale=' + 1 + ', minimum-scale=' + 1 + ', user-scalable=no');
+        		return
+        	}
+      //   	// 设置html的font-size
+      //   	htmlDom.style.fontSize = hhxhWindowWidth / 10 + 'px';
+    	}
+
+    	// 初始化适屏
+    	winResize();
+
+    	// 横竖屏切换
+    	// window.addEventListener('resize', winResize);
+    </script>
+	<script>
+		class ltRefundNewSuccess extends Polymer.Element{
+			static get is(){return "lt-refund-new-success"}
+			static get properties(){
+				return {
+					data : Object,
+				}
+			}
+			cancelPage(){
+				this.dispatchEvent(new CustomEvent('refund-new-success', {detail:{msg:"关闭页面"}}));
+			}
+		}
+		customElements.define(ltRefundNewSuccess.is,ltRefundNewSuccess)
+	</script>
+</dom-module>

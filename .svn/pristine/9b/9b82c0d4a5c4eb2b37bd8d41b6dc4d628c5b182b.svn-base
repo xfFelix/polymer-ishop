@@ -1,0 +1,433 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html" />
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html" />
+   <dom-module id="lt-user">
+       <template>
+           <style include="lt-style">
+                :host {
+                    display: block;
+                    position: relative;
+                    z-index: 1;
+                }
+                .loginBox{
+                    display: flex;
+                    justify-content:flex-end;
+                    align-items: center;
+                    height: 40px;
+                }
+                #iconContainer{
+                    width: 18px;
+                    height: 18px;
+                }
+                #loginText{
+                    color: #fff;
+                    margin-left:6px;
+                }
+                .userIcon{
+                  fill:#fff;
+                }
+                .row{
+                    display: flex;
+                    width: 100%;
+                    box-sizing: border-box;
+                    margin-bottom: var(--app-margin, 10px);
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                }
+                .menuBox{
+                    position: absolute;
+                    border: 1px solid #ddd;
+                    box-shadow: 0px 0px 2px 3px rgba(0, 0, 0, 0.2);
+                    background: #fff;
+                    right: 0;
+                    opacity: 0;
+                    display: none;
+                }
+                .menuBox::before{
+                    content: "";
+                    width: 0px;
+                    height: 0;
+                    position: absolute;
+                    border-bottom: 11px solid #fff;
+                    border-right: 8px solid transparent;
+                    border-left: 8px solid transparent;
+                    left: 99px;
+                    top: -11px;
+                }
+                .menuBox ul {
+                    list-style: none;
+                    color: #0009;
+                }
+                .menuBox ul li a{
+                    border-bottom: 1px solid #ddd;
+                    min-width: 200px;
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    height: 36px;
+                    padding: 0 2px;
+                    color: #0009;
+                    text-decoration: none;
+                }
+
+                .menuBox ul li:hover{
+                    background: #eeeeee;
+                }
+                .menuBox ul li img{
+                    display: inline-block;
+                    width: 24px;
+                    height: 24px;
+                    margin: 0 5px;
+                }
+                .loginFailText{
+                    color: #f00;
+                }
+
+                vaadin-combo-box {
+                    width: 100%;
+                    margin: 0;
+                }
+           </style>
+
+            <div class="loginBox" on-click="logoin">
+                <div id="iconContainer">
+
+                    <img class="userIcon" width="18px" height="18px"  src="./images/user.png"/>
+
+                </div>
+                <div id="loginText">{{loginText}}</div>
+            </div>
+            <div class="menuBox" id="menuBox">
+                <ul on-click="_selectMenu">
+                    <!-- <li>
+                        <img src="./images/menu_icon/menu_icon_collection">
+                        我的收藏
+                    </li> -->
+                    <li>
+                        <a href="#/cart"><img src="../../../images/menu_icon/menu_icon_cart.png">我的购物车</a>
+                    </li>
+                    <li>
+                        <a href="#/compare"><img src="../../../images/menu_icon/menu_icon_compare.png">我的对比</a>
+                    </li>
+                    <li>
+                        <a href="#/order"><img src="../../../images/menu_icon/menu_icon_orders.png">我的订单</a>
+                    </li>
+                    <li>
+                        <a href="#/profile"><img src="../../../images/menu_icon/menu_icon_setting.png">设置</a>
+                    </li>
+                    <li>
+                        <a on-click="_logout"><img src="../../../images/menu_icon/menu_icon_quit.png">退出</a>
+                    </li>
+                </ul>
+            </div>
+            <lt-pop opened="{{opened}}">
+             <div class="row">
+               <lt-input id="phoneInput" label="手机*" autocomplete="tel-local" pattern="[0-9]*" prevent-invalid-input autofocus value="{{mobile}}" required error-message="请输入手机号码"></lt-input>
+               <lt-input id="smsCodeInput" label="验证码*" pattern="[0-9]*" required error-message="请输入验证码" prevent-invalid-input value="{{smsCode}}">
+                   <lt-button id="getSmsCodeBtn" class="suffix" slot="suffix" on-click="getSmsCode" disabled="{{smsButtonDisabled}}">{{getSMScodeLabel}}</lt-button>
+               </lt-input>
+             </div>
+             <div class="row">
+               <lt-button id="loginBtn" on-click="_login" loading="{{loginLoading}}" class="fullwidth" on-finish="_buttonEvent">登录</lt-button>
+                <span class="loginFailText" hidden="{{!loginFail}}">登录失败！手机或验证码输入错误！</span>
+             </div>
+            </lt-pop>
+            <lt-pop opened="{{registerPop}}" id="registerPop">
+                <div class="userInfo row">
+                    <h2>请先完成注册</h2>
+                    <lt-input label="姓氏*" autofocus value="{{lastName}}" required></lt-input>
+                    <lt-input label="名字*" value="{{firstName}}" required></lt-input>
+                    <lt-input id="phoneInput" label="手机*" autocomplete="tel-local" pattern="[0-9]*" prevent-invalid-input autofocus value="{{userInfo.mobile}}" required readonly error-message="请输入手机号码"></lt-input>
+                    <vaadin-combo-box label="性别*" items="{{genderItems}}" value="{{gender}}" required></vaadin-combo-box>
+                </div>
+                <div class="row">
+                    <lt-button id="registerButton" class="fullwidth" loading="{{registerLoading}}" on-finish="_registerEvent" on-click="_register">注册</lt-button>
+                </div>
+            </lt-pop>
+           <!-- 获取验证吗 -->
+       		<iron-ajax
+       			id="getVerifyCode"
+       			method="POST"
+       			url = "{{_calUserUrl('j_spring_security')}}"
+                Content-Type="application/x-www-form-urlencoded"
+           	    on-response="_responVerifyCode">
+       		</iron-ajax>
+       		<!-- 登陆 -->
+       		<iron-ajax
+       			id="loginRequest"
+       			method="POST"
+       			url = "{{_calUserUrl('j_spring_security')}}"
+                Content-Type="application/x-www-form-urlencoded"
+       	        on-response="_responLogin">
+       		</iron-ajax>
+       		<!-- 获取客户信息 -->
+       		<iron-ajax
+       			id="getUserInfo"
+       			method="POST" headers = "{{header}}"
+       			url = "{{_calUserUrl('member/findById')}}"
+                Content-Type="application/json"
+                on-response="_responFind">
+       		</iron-ajax>
+            <!-- 保存客户信息 -->
+            <iron-ajax
+                id="saveUserInfo"
+                method="POST" headers="{{header}}"
+                url = "{{_calUserUrl('member/save')}}"
+                Content-Type="application/x-www-form-urlencoded"
+                on-response="_responSaveUser">
+            </iron-ajax>
+       </template>
+
+       <script>
+           /**
+            * @customElement
+            * @polymer
+            */
+           class ltUser extends ltMixin(Polymer.Element) {
+                static get is() { return 'lt-user'; }
+                static get properties() {
+                    return {
+                        login:{type:Boolean,value:false,notify:true},
+                        opened:{type:Boolean,value:false,notify:true},
+                        registerPop : {type:Boolean,value:false,notify:true},
+                        getSMScodeLabel:{type:String,value:'获取验证码'},
+                        smsButtonDisabled : {
+                            type : Boolean,
+                            value : false
+                        },
+                        loginText : String,
+                        mobile : String,
+                        smsCode : String,
+                        loginFail : {
+                            type : Boolean,
+                            value : false
+                        },
+                        genderItems : {
+                            type : Array,
+                            value : () => {
+                                return [
+                                    {
+                                        label : "男",
+                                        value : "男"
+                                    },
+                                    {
+                                        label : "女",
+                                        value : "女"
+                                    }
+                                ]
+                            }
+                        },
+                    }
+                }
+                static get observers(){
+                    // "checkInput(mobile,smsCode)"
+                }
+                // 退出
+                _logout(e){
+                    // e.prevenDefault();
+                    localStorage.removeItem('xHeader');
+                    location.reload();
+                }
+                // 判断是否有登陆;
+                ready(){
+                    super.ready();
+                    var localeHeader = localStorage.getItem('xHeader');
+                    var mobile = localStorage.getItem('mobile');
+                    if(localeHeader){
+                        var obj = JSON.parse(localeHeader);
+                        header["X-CustomToken"] = obj["X-CustomToken"];
+                        header["X-USERNAME"] = obj["X-USERNAME"];
+                        this.$.getUserInfo.body = {
+                            username : obj["X-USERNAME"]
+                        }
+                        this.$.getUserInfo.generateRequest();
+                    }else{
+                        isLogin = false;
+                        this.loginText = "登陆";
+                    }
+                }
+                // 注册
+                _register (){
+                    if(this.lastName && this.firstName && this.gender){
+                        // button 处理
+                        this.registerLoading = true;
+                        this.$.registerButton.classList.remove('fullwidth');
+
+                        this.$.saveUserInfo.body = {
+                            username : this.userInfo.username,
+                            firstName : this.firstName,
+                            lastName : this.lastName,
+                            mobile : this.userInfo.mobile,
+                            gender : this.gender
+                        }
+                        this.$.saveUserInfo.generateRequest();
+                    }
+                }
+                _responSaveUser(e){
+                    if(e.detail.response.status == 1){
+                        this.$.registerButton.success();
+                    }
+                }
+                _registerEvent(e){
+                    if(e.detail.type == "success"){
+                        // 刷新页面
+                        location.reload();
+                        // this.registerLoading = false;
+                        // this.registerPop = false;
+                        // this.$.registerButton.classList.add('fullwidth');
+                        // this.loginText = this.lastName + " " + this.firstName;
+                    }
+                }
+                // 获取用户信息
+                _responFind(e){
+                    if(e.detail.response.status == 1){
+                        this.userInfo = e.detail.response.datas[0];
+                        // 是否已经注册
+                        if(!this.userInfo.lastName){
+                            this.registerPop = true;
+                            this.$.registerPop.introAnimation();
+                        }else{
+                            // 登陆成功提示
+                            isLogin = true;
+                            this.loginText = this.userInfo.lastName + " " + this.userInfo.firstName;
+                        }
+                    }else{
+                        isLogin = false;
+                        this.loginText = "登陆";
+                        localStorage.removeItem('xHeader');
+                        header={};
+                    }
+                }
+                _buttonEvent (e){
+                    var that = this;
+                    if(e.detail.type == "success"){
+                        this.loginFail = false;
+                        this.loginLoading = false;
+                        this.opened = false;
+                        this.$.loginBtn.classList.add('fullwidth');
+                        // 更新header
+                        window.token = this.loginResponse.value;
+                        this._updateHeader(token, this.mobile);
+                        // 刷新页面
+                        location.reload();
+                        // 手机放入缓存
+                        // localStorage.setItem('mobile',this.mobile)
+                        // 获取个人信息
+                        // this.$.getUserInfo.body = {
+                        //     username : this.mobile
+                        // }
+                        // this.$.getUserInfo.generateRequest();
+                    }else{
+                        var fail = setTimeout(function(){
+                            // button 处理
+                            that.loginLoading = false;
+                            that.loginFail = false;
+                            that.$.loginBtn.classList.add('fullwidth');
+                        },1000)
+                    }
+                }
+                // 登录
+                _login(){
+                    if(this.mobile && this.smsCode){
+                        // button 处理
+                        this.loginLoading = true;
+                        this.$.loginBtn.classList.remove('fullwidth');
+
+                        this.$.loginRequest.body = {
+                            "j_mobile":this.mobile,
+                            "j_sms_code":this.smsCode
+                        }
+                        this.$.loginRequest.generateRequest();
+                    }
+                }
+                _responLogin(e){
+                    if(e.detail.response.status == "Success"){
+                        // button 处理
+                        this.$.loginBtn.success();
+                        this.loginResponse = e.detail.response;
+                    }else{
+                        this.loginFail = true;
+                        this.$.loginBtn.fail();
+                        // this.confirmLabel = "请输入正确验证码";
+                    }
+                }
+                // 验证码响应
+                _responVerifyCode(e){
+
+                }
+                // 获取验证码
+                _getVerifiyCode(){
+                    var that = this;
+                    if(this.mobile && !this.smsButtonDisabled){
+                        this.secCount = 60;
+                        this.$.getVerifyCode.body = {
+                            "j_mobile":this.mobile
+                        };
+                        this.$.getVerifyCode.generateRequest();
+                        this.smsButtonDisabled = true;
+                        var timeCount = setInterval(function(){
+                            if(that.secCount > 0){
+                                --that.secCount;
+                                that.getSMScodeLabel = that.secCount + "s后重新获取";
+                            }else{
+                                window.clearInterval(timeCount);
+                                that.getSMScodeLabel = "获取验证码";
+                                that.smsButtonDisabled = false;
+                            }
+                        },1000);
+                    }
+                }
+                getSmsCode(){
+                    this._getVerifiyCode();
+                }
+                _selectMenu(e){
+                    e.stopPropagation();
+                    this.closeMenu();
+                }
+                logoin(e){
+                    e.stopPropagation();
+                    if(isLogin){
+                        // 已登陆打开菜单
+                        var trans = anime({
+                            targets:[this.$.menuBox],
+                            opacity:[0,1],
+                            scale:[1.5,1],
+                            duration:300,
+                            easing:'easeInOutCubic',
+                            begin:function(){
+                                this.$.menuBox.style.display = 'block';
+                            }.bind(this)
+                        })
+                    }else{
+                        // 未登录，弹出登陆窗
+                        this.opened=true;
+                        this.getSMScodeLabel = "获取验证码";
+                        // 清空登陆数据
+                        this.mobile = null;
+                        this.smsCode = null;
+                    }
+                }
+                openlogin(){
+                    this.opened=true;
+                    this.getSMScodeLabel = "获取验证码";
+                    // 清空登陆数据
+                    this.mobile = null;
+                    this.smsCode = null;
+                }
+                closeMenu(){
+                    var trans = anime({
+                        targets:[this.$.menuBox],
+                        opacity:[1,0],
+                        duration:300,
+                        easing:'easeInOutCubic',
+                        complete:function(){
+                            this.$.menuBox.style.display = 'none';
+                        }.bind(this)
+                    })
+                }
+
+           }
+
+           window.customElements.define(ltUser.is, ltUser);
+       </script>
+   </dom-module>

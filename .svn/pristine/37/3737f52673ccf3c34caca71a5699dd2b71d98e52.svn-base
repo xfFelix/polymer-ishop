@@ -1,0 +1,132 @@
+<script>
+/**
+   * Mixin that provides datetime-properties
+   *
+   * @mixinFunction
+   * @polymer
+   */
+  const ltMixin = (superClass) => {
+    return class extends superClass {
+            static get properties() {
+                return {
+                  animateItem:{
+                    type:Array
+                  },
+                  _t: {
+                    type:Function,
+                    computed: '__computeLocalize(language,resources)'
+                  },
+                  language:{
+                    type: String,
+                    value:'zh-HK',
+                    notify:true
+                  },
+                  resources:{
+                    type:Object,
+                    value:()=>{
+                      return lang
+                    }
+                  },
+                  header:{
+                    type : Object,
+                    value: header
+                  }
+                }
+            }
+            // 判断是否App环境
+            checkApp () {
+              let userAgent = navigator.userAgent.toLowerCase().toString(); //获取userAgent
+              let isAPP = userAgent.indexOf("ishop")>=0;
+              return isAPP
+            }
+            // 更新header
+            _updateHeader(token, mobile) {
+                this.header["X-CustomToken"] = token;
+                this.header["X-USERNAME"] = mobile;
+                header = this.header;
+                localStorage.setItem('xHeader', JSON.stringify(this.header));
+            }
+            _calURL(url) {
+                return baseUrl + url
+            }
+            _calUserUrl(url){
+                // console.log(this.resolveUrl(userUrl));
+                // 判读是否部署到线上；
+                if(userUrl){
+                  return userUrl + url;
+                }else{
+                  return "https://" + location.host + ":80/iCanUser/" + url;
+                }
+            }
+            _calPayUrl(url){
+              if(payUrl){
+                return payUrl + url;
+              }else{
+                return "https://" + location.host + "/iCanPayment/" + url;
+              }
+            }
+            __computeLocalize(language, resources ){
+              return function() {
+                  var key = arguments[0];
+                  if (!key || !resources || !language || !resources[language])
+                    return key || '';
+                  // Cache the key/value pairs for the same language, so that we don't
+                  // do extra work if we're just reusing strings across an application.
+                  var translatedValue = resources[language][key];
+                  if (!translatedValue) {
+                    return key;
+                  }else{
+                    return translatedValue
+                  }
+                };
+            }
+            //滚动条在Y轴上的滚动距离
+            getScrollTop(){
+            　　var scrollTop = 0, bodyScrollTop = 0, documentScrollTop = 0;
+            　　if(document.body){
+            　　　　bodyScrollTop = document.body.scrollTop;
+            　　}
+            　　if(document.documentElement){
+            　　　　documentScrollTop = document.documentElement.scrollTop;
+            　　}
+            　　scrollTop = (bodyScrollTop - documentScrollTop > 0) ? bodyScrollTop : documentScrollTop;
+            　　return scrollTop;
+            }
+            //文档的总高度
+            getScrollHeight(){
+            　　var scrollHeight = 0, bodyScrollHeight = 0, documentScrollHeight = 0;
+            　　if(document.body){
+            　　　　bodyScrollHeight = document.body.scrollHeight;
+            　　}
+            　　if(document.documentElement){
+            　　　　documentScrollHeight = document.documentElement.scrollHeight;
+            　　}
+            　　scrollHeight = (bodyScrollHeight - documentScrollHeight > 0) ? bodyScrollHeight : documentScrollHeight;
+            　　return scrollHeight;
+            }
+            //浏览器视口的高度
+            getWindowHeight(){
+            　　var windowHeight = 0;
+            　　if(document.compatMode == "CSS1Compat"){
+            　　　　windowHeight = document.documentElement.clientHeight;
+            　　}else{
+            　　　　windowHeight = document.body.clientHeight;
+            　　}
+            　　return windowHeight;
+            }
+            // base64 png
+            base64Png(str){
+              return "data:image/png;base64," + str;
+            }
+            // 发布时间格式
+            _formatTime (val){
+                if(val){
+                    var date = new Date(val);
+                    return date.getFullYear() + "." + (date.getMonth() + 1) + "." + date.getDate();
+                }
+            }
+          }
+  }
+
+  window.ltMixin = ltMixin;
+</script>
