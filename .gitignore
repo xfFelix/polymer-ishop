@@ -6,6 +6,7 @@
 #过滤文件夹Debug,Release,obj  
 Debug/
 node_modules/
+bower_components/
 .svn/
 Release/
 obj/
