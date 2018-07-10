@@ -668,11 +668,11 @@
 				this.dispatchEvent(new CustomEvent('header-close', {detail:{msg: '关闭header', result: true}, bubbles: true, composed: true}));
 				this.$.refund.style.display = 'block';
 				// 退款申请界面
-				this.$.refund_apply.style.display = 'block';
+				this.$.refund_apply.style.display = 'none';
 				// 退款成功界面(未确认)
 				this.$.refund_success.style.display = 'none';
 				// 退款原因界面
-				this.$.refund_reason.style.display = 'none';
+				this.$.refund_reason.style.display = 'block';
 				// 退款等待界面
 				this.$.refund_wait.style.display = 'none';
 				// 退款成功界面(已确认)

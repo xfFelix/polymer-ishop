@@ -15,7 +15,52 @@
 			paper-checkbox:first-child {
 			  	--primary-color: #ff5722;
 			}
-			  
+			.radio{
+				display: inline-block;
+				position: relative;
+				line-height: 18px;
+				margin: auto;
+				margin-right: 10px;
+				cursor: pointer;
+			}
+			.radio input{
+				display: none;
+			}
+			.radio .radio-bg{
+				display: inline-block;
+				height: 18px;
+				width: 18px;
+				margin-right: 5px;
+				padding: 0;
+				background-color: #45bcb8;
+				border-radius: 100%;
+				vertical-align: top;
+				box-shadow: 0 1px 15px rgba(0, 0, 0, 0.1) inset, 0 1px 4px rgba(0, 0, 0, 0.1) inset, 1px -1px 2px rgba(0, 0, 0, 0.1);
+				cursor: pointer;
+				transition: all 0.2s ease;
+			}
+			.radio .radio-on{
+				display: none;
+			}
+			.radio input:checked + span.radio-on{
+				width: 10px;
+				height: 10px;
+				position: absolute;
+				border-radius: 100%;
+				background: #FFFFFF;
+				top: 4px;
+				left: 4px;
+				box-shadow: 0 2px 5px 1px rgba(0, 0, 0, 0.3), 0 0 1px rgba(255, 255, 255, 0.4) inset;
+				background-image: linear-gradient(#ffffff 0, #e7e7e7 100%);
+				transform: scale(0, 0);
+				transition: all 0.2s ease;
+				transform: scale(1, 1);
+				display: inline-block;
+			}
+			.styled{
+				margin: auto;
+    			margin-right: 11px;
+			}
 			paper-checkbox.styled {
 			    align-self: center;
 			    /*border: 1px solid var(--paper-green-200);*/
@@ -40,23 +85,45 @@
 				<p class="title_text">请选择退款原因</p>
 			</div>
 			<div class="refund_reason">
-				<p class="reason_item">买错了车型号<paper-checkbox class="styled" checked></paper-checkbox>
-				</p>
-				<p class="reason_item">资金短缺
-					<paper-checkbox class="styled"></paper-checkbox>
-				</p>
-				<p class="reason_item">后悔了，不想要了
-					<paper-checkbox class="styled"></paper-checkbox>
-				</p>
-				<p class="reason_item">计划有变，没时间
-					<paper-checkbox class="styled"></paper-checkbox>
-				</p>
-				<p class="reason_item">其他原因
+					<p class="reason_item">买错了车型号
+						<label for="0" class="radio">
+							<span class="radio-bg"></span>
+							<input type="radio" name="reason" id="0" value="0" checked="checked" class="styled"/>
+							<span class="radio-on"></span>
+						</label>
+					</p>
+					<p class="reason_item">资金短缺
+						<label for="1" class="radio">
+							<span class="radio-bg"></span>
+							<input type="radio" name="reason" id="1" value="1" class="styled"/>
+							<span class="radio-on"></span>
+						</label>
+					</p>
+					<p class="reason_item">后悔了，不想要了
+						<label for="2" class="radio">
+							<span class="radio-bg"></span>
+							<input type="radio" name="reason" id="2" value="2" class="styled"/>
+							<span class="radio-on"></span>
+						</label>
+					</p>
+					<p class="reason_item">计划有变，没时间
+						<label for="3" class="radio">
+							<span class="radio-bg"></span>
+							<input type="radio" name="reason" id="3" value="3" class="styled"/>
+							<span class="radio-on"></span>
+						</label>
+					</p>
+					<p class="reason_item">其他原因
+						<label for="4" class="radio">
+							<span class="radio-bg"></span>
+							<input type="radio" name="reason" id="4" value="4" class="styled"/>
+							<span class="radio-on"></span>
+						</label>					
+					</p>
+					<div class="reason_text">
+						<textarea placeholder="请输入退款原因" value="{{reasonText::input}}"></textarea>
+					</div>
 					
-				</p>
-				<div class="reason_text">
-					<textarea placeholder="请输入退款原因" value="{{reasonText::input}}"></textarea>
-				</div>
 			</div>
 			<div class="refund_button">
 				<div class="button_ok" on-click="allowRefund">确认退款</div>
@@ -85,6 +152,16 @@
 					reasonText: {
 						type: String,
 						notify: true
+					},
+					resonList: {
+						type: Array,
+						value: [
+							{id: 0, text: '买错了车型号'},
+							{id: 0, text: '买错了车型号'},
+							{id: 0, text: '买错了车型号'},
+							{id: 0, text: '买错了车型号'},
+							{id: 0, text: '买错了车型号'}
+						]
 					}
 				}
 			}
@@ -93,14 +170,14 @@
 				this.reasonArray = ''
 				for (var i = 0;i<items.length; i++) {
 					if (items[i].checked === true) {
-						this.reasonArray = this.reasonArray + i + ','
+						this.reasonArray = items[i].value
 					}
 				}
 				if (this.reasonArray == '' ) {
 					this.dispatchEvent(new CustomEvent('confirm',{detail:{msg:"请选择退款原因"},bubbles: true, composed: true}))
 					return
 				}
-				this.reasonArray = this.reasonArray.substr(0,this.reasonArray.length - 1);
+				// this.reasonArray = this.reasonArray.substr(0,this.reasonArray.length - 1);
 				this.$.memberRefunds.body = {
 					vehicleSalesUid: this.data.vehicleSalesUid,
 					reasonArray: this.reasonArray,
