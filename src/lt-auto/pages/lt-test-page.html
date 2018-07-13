@@ -1,0 +1,32 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html" />
+<link rel="import" href="../elements/lt-brand.html" />
+
+<dom-module id="lt-test-page">
+	<template>
+		<style>
+			
+		</style>
+		<div class="pageContainer">
+            this is a test.html
+            <lt-brand></lt-brand>
+		</div>
+		
+	</template>
+	<script>
+		class ltTestPage extends ltMixin(Polymer.Element){
+			static get is(){return 'lt-test-page'}
+			static get properties(){
+				return {
+					
+				}
+			}
+			static get observers() {
+				return [
+					
+				]
+			}
+			
+		}
+		customElements.define(ltTestPage.is,ltTestPage)
+	</script>
+</dom-module>
